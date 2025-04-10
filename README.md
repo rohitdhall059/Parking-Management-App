@@ -1,7 +1,3 @@
-Here’s the text for a professional README that you can use for your project:
-
----
-
 # Parking Management System
 
 ## Overview
@@ -115,7 +111,3 @@ Contributions are welcome! If you'd like to contribute, fork the repository, mak
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-This text should provide a comprehensive overview of the Parking Management System, including setup instructions, features, and usage. Feel free to modify or add more details as needed.
