@@ -8,9 +8,15 @@ import com.example.parking.strategy.NonFacultyStaffPricing;
 public class NonFacultyStaff extends Client implements Observer {
     private String staffId;
     private String office;
-    private String clientId;
-    private String name;
     private String email;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public NonFacultyStaff(String clientId, String name, String email, String password,
                            String staffId, String office) {
@@ -50,7 +56,7 @@ public class NonFacultyStaff extends Client implements Observer {
     @Override
     public double getDiscountRate() {
         // Provide a specific discount rate for NonFacultyStaff
-        return 0.1; // Example: 10% discount
+        return 0.1; // Example discount rate
     }
 
     @Override

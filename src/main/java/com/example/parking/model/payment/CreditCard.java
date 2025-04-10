@@ -40,8 +40,8 @@ public class CreditCard extends PaymentMethod {
             return false;
         }
 
-        System.out.println("Credit card payment of $" + amount + " approved using card " 
-            + maskedCard + " (expires " + expiry + ").");
+        System.out.println("Credit card payment of $" + amount + " approved for " + cardHolderName 
+            + " using card " + maskedCard + " (expires " + expiry + ").");
         // Additional logic: contacting payment gateway, updating logs, etc.
         return true;
     }
@@ -59,8 +59,8 @@ public class CreditCard extends PaymentMethod {
         }
 
         String maskedCard = maskCardNumber(cardNumber);
-        System.out.println("Credit card refund of $" + amount + " processed for card " 
-            + maskedCard + " (expires " + expiry + ").");
+        System.out.println("Credit card refund of $" + amount + " processed for " + cardHolderName 
+            + " using card " + maskedCard + " (expires " + expiry + ").");
     }
 
     /**

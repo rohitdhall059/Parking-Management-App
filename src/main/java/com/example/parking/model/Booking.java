@@ -67,7 +67,9 @@ public class Booking {
         long hours = ChronoUnit.HOURS.between(startTime, endTime);
         double totalCost = hours * pricingStrategy.getRate();
         PaymentMethod defaultPaymentMethod = PaymentMethodFactory.getDefaultPaymentMethod(); // Assuming a factory method for default PaymentMethod
-        return new Booking(bookingId, client, space, startTime, endTime, defaultPaymentMethod);
+        Booking booking = new Booking(bookingId, client, space, startTime, endTime, defaultPaymentMethod);
+        booking.setTotalCost(totalCost);
+        return booking;
     }
 
     // Method to checkout

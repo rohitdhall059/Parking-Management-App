@@ -37,8 +37,8 @@ public class DebitCard extends PaymentMethod {
         }
 
         // 5. Approve payment
-        System.out.println("Debit card payment of $" + amount + " approved using card " 
-            + masked + " with valid PIN.");
+        System.out.println("Debit card payment of $" + amount + " approved for cardholder " 
+            + cardHolderName + " using card " + masked + " with valid PIN.");
         // Additional logic: deduct from bank account, record transaction, etc.
         return true;
     }
@@ -56,8 +56,8 @@ public class DebitCard extends PaymentMethod {
         }
 
         String masked = maskCardNumber(cardNumber);
-        System.out.println("Debit card refund of $" + amount + " processed for card " 
-            + masked + " with valid PIN.");
+        System.out.println("Debit card refund of $" + amount + " processed for cardholder " 
+            + cardHolderName + " using card " + masked + " with valid PIN.");
     }
 
     /**
