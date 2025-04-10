@@ -11,13 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-/**
- * Manages booking data persistence using CSV file storage.
- * Handles all booking-related CRUD operations and maintains relationships
- * with clients and parking spaces.
- */
+
 public class CSVBookingDAO implements BookingDAO {
     private final String filePath;
     private final ClientDAO clientDAO;
@@ -94,7 +89,7 @@ public class CSVBookingDAO implements BookingDAO {
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
             for (Booking b : bookings) {
-                if (b.getBookingId().equals(booking.BookingId())) {
+                if (b.getBookingId().equals(booking.getBookingId())) {
                     out.println(formatBooking(booking));
                 } else {
                     out.println(formatBooking(b));

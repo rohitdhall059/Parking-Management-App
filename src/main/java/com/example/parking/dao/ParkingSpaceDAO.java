@@ -4,9 +4,10 @@ import com.example.parking.model.ParkingSpace;
 import java.util.List;
 
 public interface ParkingSpaceDAO {
-    void save(ParkingSpace space);
     ParkingSpace getById(String id);
-    List<ParkingSpace> getAll();
-    void update(ParkingSpace space);
     void delete(String id);
-} 
+    List<ParkingSpace> getAll();
+    void update(ParkingSpace parkingSpace);
+    void save(ParkingSpace parkingSpace);
+    List<ParkingSpace> getAllParkingSpaces();
+}

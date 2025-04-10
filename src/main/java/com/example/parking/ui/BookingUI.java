@@ -8,8 +8,8 @@ import com.example.parking.dao.ClientDAO;
 import com.example.parking.dao.ParkingSpaceDAO;
 import com.example.parking.dao.CSVBookingDAO;
 import com.example.parking.dao.CSVClientDAO;
-import com.example.parking.dao.CSVParkingSpaceDAO;
 import com.example.parking.factory.PaymentMethodFactory;
+import com.example.parking.dao.ParkingSpaceDAOImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,8 +35,8 @@ public class BookingUI extends JFrame {
 
     public BookingUI() {
         // Initialize DAOs
-        ClientDAO clientDAO = new CSVClientDAO();
-        ParkingSpaceDAO parkingSpaceDAO = new CSVParkingSpaceDAO();
+        ParkingSpaceDAO parkingSpaceDAO = new ParkingSpaceDAOImpl(); 
+        ClientDAO clientDAO = new CSVClientDAO("path/to/client/data.csv"); 
         BookingDAO bookingDAO = new CSVBookingDAO(clientDAO, parkingSpaceDAO);
 
         // Initialize BookingService
@@ -122,7 +122,7 @@ public class BookingUI extends JFrame {
                     paymentType, cardNumber, credential);
 
             Booking booking = bookingService.createBooking(clientId, spaceId, startTime, endTime, paymentMethod);
-            resultArea.setText("Booking created successfully!\nBooking ID: " + booking.getId());
+            resultArea.setText("Booking created successfully!\nBooking ID: " + booking.getBookingId());
         } catch (Exception e) {
             resultArea.setText("Error creating booking: " + e.getMessage());
         }
@@ -135,7 +135,7 @@ public class BookingUI extends JFrame {
             
             StringBuilder sb = new StringBuilder("Bookings for client " + clientId + ":\n\n");
             for (Booking booking : bookings) {
-                sb.append("Booking ID: ").append(booking.getId()).append("\n");
+                sb.append("Booking ID: ").append(booking.getBookingId()).append("\n");
                 sb.append("Space ID: ").append(booking.getParkingSpace().getId()).append("\n");
                 sb.append("Start Time: ").append(booking.getStartTime()).append("\n");
                 sb.append("End Time: ").append(booking.getEndTime()).append("\n");

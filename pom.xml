@@ -35,7 +35,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.example.parking.ui.ParkingManagementGUI</mainClass>
+                            <mainClass>com.example.parking.ui.Main</mainClass> <!-- Corrected here -->
                         </manifest>
                     </archive>
                 </configuration>
@@ -45,7 +45,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>com.example.parking.ui.ParkingManagementGUI</mainClass>
+                    <mainClass>com.example.parking.ui.Main</mainClass> <!-- Corrected here -->
                 </configuration>
             </plugin>
         </plugins>

@@ -89,15 +89,11 @@ public class ClientRegistrationUI extends JFrame {
     }
 
     private void registerClient() {
-        // Get values from text fields
         String clientId = idField.getText().trim();
         String name = nameField.getText().trim();
         String email = emailField.getText().trim();
-        String password = passwordField.getText().trim();
 
         try {
-            // Call the backend service to register the client.
-            // Adjust if your ClientService.registerClient method requires a password.
             clientService.registerClient(clientId, name, email);
             JOptionPane.showMessageDialog(this, "Client registered successfully!");
             clearFields();
@@ -115,8 +111,6 @@ public class ClientRegistrationUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        // Set up the backend: Create DAO and service objects.
-        // Ensure that your CSV file paths are correct.
         CSVClientDAO clientDAO = new CSVClientDAO("data/clients.csv");
         ClientService clientService = new ClientService(clientDAO);
 

@@ -20,7 +20,7 @@ import com.example.parking.model.Client;
 public class CSVClientDAO implements ClientDAO {
     private final String filePath;
 
-    public CSVClientDAO() {
+    public CSVClientDAO(String filePath) {
         this.filePath = "clients.csv";
     }
 
