@@ -1,10 +1,17 @@
 package com.example.parking.model;
 import com.example.parking.observer.Observer;
+import com.example.parking.strategy.StudentPricing;
 /**
  * Represents a Student client. 
  * Extends the base Client class, adding specific fields like major/year.
  */
 public class Student extends Client implements Observer {
+
+    @Override
+    public double getDiscountRate() {
+        return 0.15; // Example: 15% discount
+    }
+
     private String major;
     private String year;
     private String studentId;
@@ -16,21 +23,14 @@ public class Student extends Client implements Observer {
         this.year = year;
     }
 
-    // If you prefer no password:
-    // public Student(String clientId, String name, String email, String major, String year) {
-    //     super(clientId, name, email);
-    //     this.major = major;
-    //     this.year = year;
-    // }
-
-    // Getters and setters
+   
     public String getMajor() {
         return major;
     }
     
-    @Override
     public double getParkingRate() {
-        return StudentPricing.getRate();
+        StudentPricing pricing = new StudentPricing();
+        return pricing.getRate();
     }
 
     public void setMajor(String major) {

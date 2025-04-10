@@ -20,7 +20,6 @@ public class OccupiedState implements ParkingSpaceState {
 
     @Override
     public void disable(ParkingSpace space) {
-        space.setEnabled(false);
         space.setState(new DisabledState());
         System.out.println("Parking space " + space.getId() + " has been disabled.");
     }

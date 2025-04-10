@@ -1,27 +1,31 @@
 package com.example.parking.model;
-import com.example.parking.model.payment.PaymentMethod;
-import com.example.parking.strategy.PricingStrategy;
-import com.example.parking.factory.PricingStrategyFactory;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+
+import com.example.parking.factory.PaymentMethodFactory;
+import com.example.parking.factory.PricingStrategyFactory;
+import com.example.parking.model.payment.PaymentMethod;
+import com.example.parking.strategy.PricingStrategy;
 
 public class Booking {
     private String bookingId;
     private String clientId; // or hold a Client reference
-    private String spaceId;  // or hold a ParkingSpace reference
+    private ParkingSpace spaceId;  // Changed to hold a ParkingSpace reference
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private double totalCost;
     private PaymentMethod paymentMethod;
     private double deposit = 10.0; // Default deposit amount
+    private String status;
+    private ParkingSpace parkingSpace; // Assuming this is a reference to the ParkingSpace object
 
-    public Booking(String bookingId, String clientId, String spaceId, LocalDateTime startTime, LocalDateTime endTime, double totalCost) {
+    public Booking(String bookingId, Client client, ParkingSpace space, LocalDateTime startTime, LocalDateTime endTime, PaymentMethod paymentMethod2) {
         this.bookingId = bookingId;
-        this.clientId = clientId;
-        this.spaceId = spaceId;
+        this.clientId = client.getId(); // Assuming Client has a getClientId() method
+        this.spaceId = space; // Assigning ParkingSpace directly
         this.startTime = startTime;
         this.endTime = endTime;
-        this.totalCost = totalCost;
+        this.paymentMethod = paymentMethod2;
     }
 
     // Getters/Setters
@@ -31,8 +35,8 @@ public class Booking {
     public String getClientId() { return clientId; }
     public void setClientId(String clientId) { this.clientId = clientId; }
 
-    public String getSpaceId() { return spaceId; }
-    public void setSpaceId(String spaceId) { this.spaceId = spaceId; }
+    public String getSpaceId() { return spaceId.getId(); }
+    public void setSpaceId(ParkingSpace spaceId) { this.spaceId = spaceId; }
 
     public LocalDateTime getStartTime() { return startTime; }
     public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
@@ -55,14 +59,15 @@ public class Booking {
     }
 
     // Method to create a booking
-    public static Booking createBooking(String bookingId, String clientId, String spaceId, LocalDateTime startTime, LocalDateTime endTime, String clientType) {
+    public static Booking createBooking(String bookingId, Client client, ParkingSpace space, LocalDateTime startTime, LocalDateTime endTime, String clientType) {
         if (startTime.isAfter(endTime)) {
             throw new IllegalArgumentException("Start time must be before end time.");
         }
-        PricingStrategy pricingStrategy = PricingStrategyFactory.getPricingStrategy(clientType);
+        PricingStrategy pricingStrategy = (PricingStrategy) PricingStrategyFactory.getPricingStrategy(clientType);
         long hours = ChronoUnit.HOURS.between(startTime, endTime);
         double totalCost = hours * pricingStrategy.getRate();
-        return new Booking(bookingId, clientId, spaceId, startTime, endTime, totalCost);
+        PaymentMethod defaultPaymentMethod = PaymentMethodFactory.getDefaultPaymentMethod(); // Assuming a factory method for default PaymentMethod
+        return new Booking(bookingId, client, space, startTime, endTime, defaultPaymentMethod);
     }
 
     // Method to checkout
@@ -90,7 +95,7 @@ public class Booking {
 
         // Calculate additional cost
         long additionalHours = ChronoUnit.HOURS.between(endTime, newEndTime);
-        PricingStrategy pricingStrategy = PricingStrategyFactory.getPricingStrategy(clientType);
+        PricingStrategy pricingStrategy = (PricingStrategy) PricingStrategyFactory.getPricingStrategy(clientType);
         double additionalCost = additionalHours * pricingStrategy.getRate();
 
         // Update the end time and total cost
@@ -138,4 +143,24 @@ public class Booking {
             System.out.println("No payment method set for this booking. Cannot process refund.");
         }
     }
+
+    public void setAmount(double amount) {
+        this.totalCost = amount;
+    }
+    public double getAmount() {
+        return this.totalCost;
+    }
+    public void setOccupied(boolean occupied, Car car) {
+        this.spaceId.setOccupied(occupied, car);
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    public String getStatus() {
+        return status;
+    }
+    public ParkingSpace getParkingSpace() {
+        return this.parkingSpace;
+    }
+    
 }

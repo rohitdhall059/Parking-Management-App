@@ -1,16 +1,20 @@
 package com.example.parking.model;
 
 import com.example.parking.observer.Observer;
+import com.example.parking.strategy.NonFacultyStaffPricing;
 /**
  * Represents non-faculty staff, extending the base Client class.
  */
 public class NonFacultyStaff extends Client implements Observer {
     private String staffId;
     private String office;
+    private String clientId;
+    private String name;
+    private String email;
 
     public NonFacultyStaff(String clientId, String name, String email, String password,
                            String staffId, String office) {
-        super(clientId, name, email, password, null, null); // Initialize with null car and pricing strategy
+        super(clientId, name, email, password);
         this.staffId = staffId;
         this.office = office;
     }
@@ -31,9 +35,9 @@ public class NonFacultyStaff extends Client implements Observer {
         this.office = office;
     }
 
-    @Override
     public double getParkingRate() {
-        return NonFacultyStaffPricing.getRate();
+        NonFacultyStaffPricing pricing = new NonFacultyStaffPricing();
+        return pricing.getRate();
     }
     @Override
     public void update(ParkingSpace parkingSpace) {
@@ -43,6 +47,12 @@ public class NonFacultyStaff extends Client implements Observer {
             System.out.println("Details: " + parkingSpace.getCarInfo());
         }
     }
+    @Override
+    public double getDiscountRate() {
+        // Provide a specific discount rate for NonFacultyStaff
+        return 0.1; // Example: 10% discount
+    }
+
     @Override
     public String toString() {
         return "NonFacultyStaff{" +

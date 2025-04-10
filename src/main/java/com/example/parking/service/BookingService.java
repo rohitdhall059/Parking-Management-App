@@ -1,5 +1,10 @@
 package com.example.parking.service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
 import com.example.parking.dao.BookingDAO;
 import com.example.parking.dao.ClientDAO;
 import com.example.parking.dao.ParkingSpaceDAO;
@@ -7,10 +12,6 @@ import com.example.parking.model.Booking;
 import com.example.parking.model.Client;
 import com.example.parking.model.ParkingSpace;
 import com.example.parking.model.payment.PaymentMethod;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * Manages booking creation, cancellation, etc.
@@ -86,7 +87,6 @@ public class BookingService {
             throw new IllegalArgumentException("Booking not found: " + bookingId);
         }
 
-        // Update booking status
         booking.setStatus("CANCELLED");
         bookingDAO.update(booking);
 

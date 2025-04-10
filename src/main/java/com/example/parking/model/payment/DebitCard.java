@@ -14,17 +14,17 @@ public class DebitCard extends PaymentMethod {
     }
 
     @Override
-    public void processPayment(double amount) {
+    public boolean processPayment(double amount) {
         // 1. Validate the debit card number
         if (!isValidCardNumber(cardNumber)) {
             System.out.println("Transaction failed: invalid debit card number.");
-            return;
+            return false;
         }
 
         // 2. Validate the PIN
         if (!isValidPin(pin)) {
             System.out.println("Transaction failed: incorrect PIN.");
-            return;
+            return false;
         }
 
         // 3. Mask the card number
@@ -33,13 +33,14 @@ public class DebitCard extends PaymentMethod {
         // 4. Check amount
         if (amount <= 0) {
             System.out.println("Transaction failed: amount must be greater than 0.");
-            return;
+            return false;
         }
 
         // 5. Approve payment
         System.out.println("Debit card payment of $" + amount + " approved using card " 
             + masked + " with valid PIN.");
         // Additional logic: deduct from bank account, record transaction, etc.
+        return true;
     }
 
     @Override

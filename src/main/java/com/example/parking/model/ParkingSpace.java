@@ -2,7 +2,11 @@ package com.example.parking.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.example.parking.observer.Observer;
+import com.example.parking.state.AvailableState;
+import com.example.parking.state.DisabledState;
+import com.example.parking.state.OccupiedState;
 import com.example.parking.state.ParkingSpaceState;
 
 public class ParkingSpace {
@@ -88,6 +92,7 @@ public class ParkingSpace {
     public boolean isEnabled() {
         return isEnabled;
     }
+    
 
     public double getRate() {
         return rate;
@@ -149,5 +154,9 @@ public class ParkingSpace {
         this.licensePlate = null;
         this.state = new AvailableState();
         notifyObservers();
+    }
+
+    public void setEnabled(boolean b) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

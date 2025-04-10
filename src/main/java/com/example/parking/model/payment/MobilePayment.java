@@ -12,22 +12,23 @@ public class MobilePayment extends PaymentMethod {
     }
 
     @Override
-    public void processPayment(double amount) {
+    public boolean processPayment(double amount) {
         // 1. Validate the phone number
         if (!isValidPhoneNumber(phoneNumber)) {
             System.out.println("Transaction failed: invalid phone number.");
-            return;
+            return false;
         }
 
         // 2. Perform a pseudo "approval"
         if (amount <= 0) {
             System.out.println("Transaction failed: amount must be greater than 0.");
-            return;
+            return false;
         }
 
         System.out.println("Mobile payment of $" + amount + " approved using phone number " 
             + maskPhoneNumber(phoneNumber) + ".");
         // Additional logic: contacting payment gateway, updating logs, etc.
+        return true;
     }
 
     @Override

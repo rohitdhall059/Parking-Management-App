@@ -1,6 +1,8 @@
 package com.example.parking.model;
-import com.example.parking.observer.Observer;
 import java.util.Date;
+
+import com.example.parking.observer.Observer;
+import com.example.parking.strategy.VisitorPricing; // Import VisitorPricing if it exists in this package
 /**
  * Represents a visitor client, extending the base Client class.
  */
@@ -11,7 +13,7 @@ public class Visitor extends Client implements Observer {
 
     public Visitor(String clientId, String name, String email, String password,
                    String visitInformation, String visitorId) {
-        super(clientId, name, email, password, null, null); // Initialize with null car and pricing strategy
+        super(clientId, name, email, null); // Initialize with null car and pricing strategy
         this.visitInformation = visitInformation;
         this.visitorId = visitorId;
     }
@@ -39,9 +41,9 @@ public class Visitor extends Client implements Observer {
         this.visitDate = visitDate;
     }
 
-    @Override
     public double getParkingRate() {
-        return VisitorPricing.getRate();
+        VisitorPricing visitorPricing = new VisitorPricing();
+        return visitorPricing.getRate();
     }
 
     @Override
@@ -53,6 +55,11 @@ public class Visitor extends Client implements Observer {
             System.out.println("Details: " + parkingSpace.getCarInfo());
         }
     }
+    @Override
+    public double getDiscountRate() {
+        return 0.1; // Example: 10% discount
+    }
+
     @Override
     public String toString() {
         return "Visitor{" +

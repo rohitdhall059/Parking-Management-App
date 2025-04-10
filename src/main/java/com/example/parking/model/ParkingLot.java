@@ -2,6 +2,7 @@ package com.example.parking.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.example.parking.iterator.ParkingSpaceIterator;
 
 public class ParkingLot {
@@ -9,6 +10,7 @@ public class ParkingLot {
     private String name;
     private String location;
     private List<ParkingSpace> parkingSpaces;
+    private boolean enabled;
 
     public ParkingLot(String id, String name, String location) {
         this.id = id;
@@ -45,4 +47,12 @@ public class ParkingLot {
     public List<ParkingSpace> getParkingSpaces() {
         return parkingSpaces;
     }
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
 }

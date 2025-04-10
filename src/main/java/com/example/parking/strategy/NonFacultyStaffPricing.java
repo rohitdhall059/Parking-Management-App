@@ -1,9 +1,15 @@
-package com.example.parking.model.pricing;
+package com.example.parking.strategy;
 
-import com.example.parking.strategy.PricingStrategy;
 public class NonFacultyStaffPricing implements PricingStrategy {
+    private static final double RATE = 10.0; 
+
     @Override
     public double getRate() {
-        return 10.0;
+        return RATE;
     }
-}
+
+    @Override
+    public String getType() {
+        return "NON_FACULTY_STAFF";
+    }
+} 

@@ -1,10 +1,11 @@
 package com.example.parking.service;
 
-import com.example.parking.model.Client;
-import com.example.parking.dao.ClientDAO;
-import com.example.parking.factory.ClientFactory;
 import java.util.List;
 import java.util.UUID;
+
+import com.example.parking.dao.ClientDAO;
+import com.example.parking.factory.ClientFactory;
+import com.example.parking.model.Client;
 
 /**
  * Handles all "client"-related business logic:

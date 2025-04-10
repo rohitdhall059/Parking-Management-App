@@ -1,6 +1,7 @@
 package com.example.parking.iterator;
 
 import java.util.List;
+
 import com.example.parking.model.ParkingSpace;
 
 public class ParkingSpaceIterator {
@@ -17,7 +18,7 @@ public class ParkingSpaceIterator {
     public boolean hasNext() {
         while (position < parkingSpaces.size()) {
             ParkingSpace space = parkingSpaces.get(position);
-            if (!isEnabledOnly || (isEnabledOnly && space.isEnabled)) {
+            if (!isEnabledOnly || (isEnabledOnly && space.isEnabled())) {
                 return true;
             }
             position++;

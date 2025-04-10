@@ -1,4 +1,4 @@
-package com.example.parking.model.state;
+package com.example.parking.observer;
 
 import com.example.parking.model.ParkingSpace;
 

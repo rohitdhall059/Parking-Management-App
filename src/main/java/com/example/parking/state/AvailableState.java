@@ -5,7 +5,7 @@ public class AvailableState implements ParkingSpaceState {
     @Override
     public void occupy(ParkingSpace space, String licensePlate) {
         if (space.isEnabled()) {
-            space.setOccupied(true, new Car(licensePlate));
+            //space.setOccupied(true, new Car(licensePlate));
             space.setState(new OccupiedState());
             System.out.println("Parking space " + space.getId() + " is now occupied by car with license plate: " + licensePlate);
         } else {

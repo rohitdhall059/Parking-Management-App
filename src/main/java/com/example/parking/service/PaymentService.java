@@ -1,9 +1,10 @@
 package com.example.parking.service;
 
-import com.example.parking.model.payment.PaymentMethod;
-import com.example.parking.model.Booking;
-import com.example.parking.dao.BookingDAO;
 import java.util.List;
+
+import com.example.parking.dao.BookingDAO;
+import com.example.parking.model.Booking;
+import com.example.parking.model.payment.PaymentMethod;
 
 public class PaymentService {
     private final BookingDAO bookingDAO;
@@ -15,13 +16,13 @@ public class PaymentService {
     public void processPayment(Booking booking) {
         PaymentMethod paymentMethod = booking.getPaymentMethod();
         if (paymentMethod == null) {
-            throw new IllegalStateException("No payment method specified for booking: " + booking.getId());
+            throw new IllegalStateException("No payment method specified for booking: " + booking.getClientId());
         }
 
         // Process payment using the payment method
         boolean success = paymentMethod.processPayment(booking.getAmount());
         if (!success) {
-            throw new IllegalStateException("Payment processing failed for booking: " + booking.getId());
+            throw new IllegalStateException("Payment processing failed for booking: " + booking.getClientId());
         }
 
         // Update booking status
@@ -32,16 +33,16 @@ public class PaymentService {
     public void processRefund(Booking booking) {
         PaymentMethod paymentMethod = booking.getPaymentMethod();
         if (paymentMethod == null) {
-            throw new IllegalStateException("No payment method specified for booking: " + booking.getId());
+            throw new IllegalStateException("No payment method specified for booking: " + booking.getClientId());
         }
 
         // Calculate refund amount (e.g., 80% of the booking amount for cancellations)
         double refundAmount = booking.getAmount() * 0.8;
 
-        // Process refund using the payment method
-        boolean success = paymentMethod.processRefund(refundAmount);
-        if (!success) {
-            throw new IllegalStateException("Refund processing failed for booking: " + booking.getId());
+        try {
+            paymentMethod.processRefund(refundAmount);
+        } catch (Exception e) {
+            throw new IllegalStateException("Refund processing failed for booking: " + booking.getClientId(), e);
         }
 
         // Update booking status

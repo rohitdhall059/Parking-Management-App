@@ -8,7 +8,7 @@ public abstract class PaymentMethod {
         this.amount = amount;
     }
 
-    public abstract void processPayment(double amount);
+    public abstract boolean processPayment(double amount);
 
     public abstract void processRefund(double amount);
 

@@ -18,17 +18,17 @@ public class CreditCard extends PaymentMethod {
     }
 
     @Override
-    public void processPayment(double amount) {
+    public boolean processPayment(double amount) {
         // 1. Validate the credit card number
         if (!isValidCardNumber(cardNumber)) {
             System.out.println("Transaction failed: invalid credit card number.");
-            return;
+            return false;
         }
 
         // 2. Check if the card is expired
         if (isCardExpired(expiry)) {
             System.out.println("Transaction failed: credit card is expired (" + expiry + ").");
-            return;
+            return false;
         }
 
         // 3. Mask the card number for display
@@ -37,12 +37,13 @@ public class CreditCard extends PaymentMethod {
         // 4. Perform a pseudo "approval"
         if (amount <= 0) {
             System.out.println("Transaction failed: amount must be greater than 0.");
-            return;
+            return false;
         }
 
         System.out.println("Credit card payment of $" + amount + " approved using card " 
             + maskedCard + " (expires " + expiry + ").");
         // Additional logic: contacting payment gateway, updating logs, etc.
+        return true;
     }
 
     @Override

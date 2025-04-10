@@ -1,4 +1,4 @@
-package com.example.parking.model.pricing;
+package com.example.parking.strategy;
 
 public interface PricingStrategy {
     double getRate();

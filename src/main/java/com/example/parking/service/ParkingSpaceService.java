@@ -1,9 +1,10 @@
 package com.example.parking.service;
 
-import com.example.parking.model.ParkingSpace;
-import com.example.parking.dao.ParkingSpaceDAO;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.example.parking.dao.ParkingSpaceDAO;
+import com.example.parking.model.ParkingSpace;
 
 /**
  * Handles parking space operations:
@@ -25,7 +26,6 @@ public class ParkingSpaceService {
 
     public List<ParkingSpace> getAvailableParkingSpaces() {
         return parkingSpaceDAO.getAll().stream()
-                .filter(ParkingSpace::isAvailable)
                 .collect(Collectors.toList());
     }
 
@@ -134,3 +134,4 @@ public class ParkingSpaceService {
         updateSpaceStatus(spaceId, false);
     }
 }
+

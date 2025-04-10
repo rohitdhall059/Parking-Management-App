@@ -1,24 +1,27 @@
 package com.example.parking.model;
 
-import com.example.parking.model.Car;
-import com.example.parking.strategy.ParkingRateStrategy;
-import com.example.parking.model.payment.PaymentMethod;
 import java.util.List;
+
+import com.example.parking.model.payment.PaymentMethod; // Ensure this package and class exist
+import com.example.parking.strategy.PricingStrategy;
 public abstract class Client {
     protected String email;
     protected String password;
     protected String name;
-    protected ParkingRateStrategy parkingRateStrategy;
+    protected String status; // Added status field
+    protected PricingStrategy parkingRateStrategy;
+    protected Car car; // Added car field
     protected List<Booking> bookings;
     protected PaymentMethod paymentMethod;
+    protected String id; // Unique identifier for the client
 
-    public Client(String email, String password, String name, ParkingRateStrategy parkingRateStrategy) {
+    public Client(String email, String password, String name, String password2) {
         this.email = email;
         this.status = "ACTIVE";
         this.car = null;
     }
 
-    public Client(String clientId, String name2, String email2, String password, Object object, String string) {
+    public Client(String clientId, String name2, String email2, String password2, Object object, Object object2) {
         //TODO Auto-generated constructor stub
     }
 
@@ -34,7 +37,7 @@ public abstract class Client {
         return email;
     }
 
-    public void setParkingRateStrategy(ParkingRateStrategy strategy) {
+    public void setParkingRateStrategy(PricingStrategy strategy) {
         this.parkingRateStrategy = strategy;
     }
 
@@ -51,4 +54,8 @@ public abstract class Client {
     }
 
     public abstract double getDiscountRate();
+
+    public Object getPassword() {
+        return password;
+    }
 } 

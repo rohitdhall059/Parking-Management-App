@@ -1,6 +1,6 @@
 package com.example.parking.model;
 
-import java.util.List;
+import com.example.parking.iterator.ParkingSpaceIterator;
 
 public class Manager {
     private String id;

@@ -94,7 +94,7 @@ public class CSVBookingDAO implements BookingDAO {
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
             for (Booking b : bookings) {
-                if (b.getId().equals(booking.getId())) {
+                if (b.getBookingId().equals(booking.BookingId())) {
                     out.println(formatBooking(booking));
                 } else {
                     out.println(formatBooking(b));
@@ -116,7 +116,7 @@ public class CSVBookingDAO implements BookingDAO {
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
             for (Booking booking : bookings) {
-                if (!booking.getId().equals(id)) {
+                if (!booking.getClientId().equals(id)) {
                     out.println(formatBooking(booking));
                 }
             }
@@ -131,7 +131,7 @@ public class CSVBookingDAO implements BookingDAO {
     @Override
     public List<Booking> getByClientId(String clientId) {
         return getAll().stream()
-                .filter(b -> b.getClient().getId().equals(clientId))
+                .filter(b -> b.getClientId().equals(clientId))
                 .toList();
     }
 
@@ -142,8 +142,8 @@ public class CSVBookingDAO implements BookingDAO {
      */
     private String formatBooking(Booking booking) {
         return String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s",
-                booking.getId(),
-                booking.getClient().getId(),
+                booking.getBookingId(),
+                booking.getClientId(),
                 booking.getParkingSpace().getId(),
                 booking.getStartTime().format(formatter),
                 booking.getEndTime().format(formatter),

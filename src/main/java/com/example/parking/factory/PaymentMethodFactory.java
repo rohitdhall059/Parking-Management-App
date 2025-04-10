@@ -1,6 +1,9 @@
 package com.example.parking.factory;
 
-import com.example.parking.model.payment.*;
+import com.example.parking.model.payment.CreditCard;
+import com.example.parking.model.payment.DebitCard;
+import com.example.parking.model.payment.MobilePayment;
+import com.example.parking.model.payment.PaymentMethod;
 
 public class PaymentMethodFactory {
 
@@ -17,10 +20,16 @@ public class PaymentMethodFactory {
      */
     public static PaymentMethod createPaymentMethod(String type, String cardNumber, String credential) {
         return switch (type.toLowerCase()) {
-            case "credit" -> new CreditCard(cardNumber, credential);
-            case "debit" -> new DebitCard(cardNumber, credential);
-            case "mobile" -> new MobilePayment(credential);
+            case "credit" -> new CreditCard(cardNumber, credential, "DefaultHolder", 0.0);
+            case "debit" -> new DebitCard(cardNumber, credential, "DefaultHolder", 0.0);
+            case "mobile" -> new MobilePayment(credential, 0.0);
             default -> throw new IllegalArgumentException("Unknown payment method type: " + type);
         };
     }
+    public static PaymentMethod getDefaultPaymentMethod() {
+        // Return a default PaymentMethod instance (replace with actual implementation)
+        return new CreditCard("0000-0000-0000-0000", "12/34", "DefaultHolder", 0.0); // Default CreditCard instance
+    }
+
+    
 }

@@ -1,11 +1,17 @@
 package com.example.parking.dao;
 
-import com.example.parking.model.Client;
-import com.example.parking.model.Car;
-import com.example.parking.factory.ClientFactory;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.parking.factory.ClientFactory;
+import com.example.parking.model.Car;
+import com.example.parking.model.Client;
 
 /**
  * Handles client data persistence using CSV file storage.
@@ -122,7 +128,7 @@ public class CSVClientDAO implements ClientDAO {
                 client.getId(),
                 client.getName(),
                 client.getEmail(),
-                client.getStatus(),
+                //client.getStatus(),
                 client.getCar() != null ? client.getCar().getLicensePlate() : "");
     }
 

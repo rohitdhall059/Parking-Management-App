@@ -1,8 +1,8 @@
-package com.example.parking.model.pricing;
-import com.example.parking.strategy.PricingStrategy;
+package com.example.parking.strategy;
 
 public class StudentPricing implements PricingStrategy {
-    private static final double RATE = 1.0; // $1 per hour
+    private static final double RATE = 5.0; 
+    
 
     @Override
     public double getRate() {
