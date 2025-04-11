@@ -159,4 +159,7 @@ public class ParkingSpace {
     public void setEnabled(boolean b) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+    public List<Observer> getObservers() {
+        return observers; // Assuming 'observers' is the list of observers in ParkingSpace
+    }
 }

@@ -1,17 +1,23 @@
+package com.example.parking.tests;
+
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
+import com.example.parking.strategy.StudentPricing;
+import com.example.parking.strategy.FacultyPricing;
+import com.example.parking.strategy.NonFacultyStaffPricing;
+import com.example.parking.strategy.VisitorPricing;
 import org.junit.jupiter.api.Test;
 
 class PricingStrategyTest {
     private StudentPricing studentPricing;
-    private FacultyMemberPricing facultyPricing;
+    private FacultyPricing facultyPricing;
     private NonFacultyStaffPricing nonFacultyPricing;
     private VisitorPricing visitorPricing;
 
     @BeforeEach
     void setUp() {
         studentPricing = new StudentPricing();
-        facultyPricing = new FacultyMemberPricing();
+        facultyPricing = new FacultyPricing();
         nonFacultyPricing = new NonFacultyStaffPricing();
         visitorPricing = new VisitorPricing();
     }
