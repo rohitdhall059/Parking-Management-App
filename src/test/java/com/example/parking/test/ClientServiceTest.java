@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,16 @@ import com.example.parking.model.Manager;
 import com.example.parking.model.ParkingLot;
 import com.example.parking.model.ParkingSpace;
 import com.example.parking.model.payment.PaymentMethod;
+import com.example.parking.service.ClientService;
+import com.example.parking.dao.ClientDAO;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.BeforeEach;
 
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+
+import java.util.ArrayList;
 
 public class ClientServiceTest {
     // Dummy PaymentMethod implementation for testing.
@@ -59,6 +70,17 @@ public class ClientServiceTest {
         public TestParkingSpaceIterator(List<ParkingSpace> spaces, boolean isEnabledOnly) {
             super(spaces, isEnabledOnly);
         }
+    }
+
+    private ClientService clientService;
+    
+    @Mock
+    private ClientDAO clientDAO;
+    
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        clientService = new ClientService(clientDAO);
     }
 
     // -------------------- Booking Tests --------------------
@@ -267,5 +289,210 @@ public class ClientServiceTest {
         String output = baos.toString();
         assertTrue(output.contains("PS301"));
         assertTrue(output.contains("PS302"));
+    }
+
+    @Test
+    void testRegisterClientSuccess() {
+        // Setup
+        String type = "FM";
+        String name = "John Smith";
+        String email = "john@example.com";
+        
+        when(clientDAO.getAll()).thenReturn(new ArrayList<>());
+        
+        // Execute
+        Client result = clientService.registerClient(type, name, email);
+        
+        // Verify
+        assertNotNull(result);
+        assertEquals(name, result.getName());
+        assertEquals(email, result.getEmail());
+        verify(clientDAO).save(result);
+    }
+    
+    @Test
+    void testRegisterClientWithExistingEmail() {
+        // Setup
+        String type = "FM";
+        String name = "John Smith";
+        String email = "existing@example.com";
+        
+        Client existingClient = new FacultyMember("FM001", "Existing User", email, "password", "F123", "Computer Science");
+        when(clientDAO.getAll()).thenReturn(Arrays.asList(existingClient));
+        
+        // Execute & Verify
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            clientService.registerClient(type, name, email);
+        });
+        
+        assertTrue(exception.getMessage().contains("Client with this email already exists"));
+        verify(clientDAO, never()).save(any());
+    }
+    
+    @Test
+    void testGetClientSuccess() {
+        // Setup
+        String clientId = "FM001";
+        Client mockClient = new FacultyMember(clientId, "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        when(clientDAO.getById(clientId)).thenReturn(mockClient);
+        
+        // Execute
+        Client result = clientService.getClient(clientId);
+        
+        // Verify
+        assertNotNull(result);
+        assertEquals(clientId, result.getId());
+        assertEquals("John Smith", result.getName());
+    }
+    
+    @Test
+    void testGetClientNotFound() {
+        // Setup
+        String clientId = "NONEXISTENT";
+        when(clientDAO.getById(clientId)).thenReturn(null);
+        
+        // Execute
+        Client result = clientService.getClient(clientId);
+        
+        // Verify
+        assertNull(result);
+    }
+    
+    @Test
+    void testGetAllClients() {
+        // Setup
+        List<Client> mockClients = Arrays.asList(
+            new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science"),
+            new FacultyMember("FM002", "Jane Doe", "jane@example.com", "password", "F124", "Physics")
+        );
+        when(clientDAO.getAll()).thenReturn(mockClients);
+        
+        // Execute
+        List<Client> result = clientService.getAllClients();
+        
+        // Verify
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("FM001", result.get(0).getId());
+        assertEquals("FM002", result.get(1).getId());
+    }
+    
+    @Test
+    void testUpdateClientStatusSuccess() {
+        // Setup
+        String clientId = "FM001";
+        Client mockClient = new FacultyMember(clientId, "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        when(clientDAO.getById(clientId)).thenReturn(mockClient);
+        
+        // Execute
+        clientService.updateClientStatus(clientId, "INACTIVE");
+        
+        // Verify
+        assertEquals("INACTIVE", mockClient.getStatus());
+        verify(clientDAO).update(mockClient);
+    }
+    
+    @Test
+    void testUpdateClientStatusNotFound() {
+        // Setup
+        String clientId = "NONEXISTENT";
+        when(clientDAO.getById(clientId)).thenReturn(null);
+        
+        // Execute & Verify
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            clientService.updateClientStatus(clientId, "INACTIVE");
+        });
+        
+        assertTrue(exception.getMessage().contains("Client not found"));
+        verify(clientDAO, never()).update(any());
+    }
+    
+    @Test
+    void testActivateClient() {
+        // Setup
+        String clientId = "FM001";
+        Client mockClient = new FacultyMember(clientId, "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        when(clientDAO.getById(clientId)).thenReturn(mockClient);
+        
+        // Execute
+        clientService.activateClient(clientId);
+        
+        // Verify
+        assertEquals("ACTIVE", mockClient.getStatus());
+        verify(clientDAO).update(mockClient);
+    }
+    
+    @Test
+    void testDeactivateClient() {
+        // Setup
+        String clientId = "FM001";
+        Client mockClient = new FacultyMember(clientId, "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        when(clientDAO.getById(clientId)).thenReturn(mockClient);
+        
+        // Execute
+        clientService.deactivateClient(clientId);
+        
+        // Verify
+        assertEquals("INACTIVE", mockClient.getStatus());
+        verify(clientDAO).update(mockClient);
+    }
+    
+    @Test
+    void testSuspendClient() {
+        // Setup
+        String clientId = "FM001";
+        Client mockClient = new FacultyMember(clientId, "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        when(clientDAO.getById(clientId)).thenReturn(mockClient);
+        
+        // Execute
+        clientService.suspendClient(clientId);
+        
+        // Verify
+        assertEquals("SUSPENDED", mockClient.getStatus());
+        verify(clientDAO).update(mockClient);
+    }
+    
+    @Test
+    void testDeleteClient() {
+        // Setup
+        String clientId = "FM001";
+        
+        // Execute
+        clientService.deleteClient(clientId);
+        
+        // Verify
+        verify(clientDAO).delete(clientId);
+    }
+    
+    @Test
+    void testLoginSuccess() {
+        // Setup
+        String email = "john@example.com";
+        String password = "password";
+        Client mockClient = new FacultyMember("FM001", "John Smith", email, password, "F123", "Computer Science");
+        when(clientDAO.getAll()).thenReturn(Arrays.asList(mockClient));
+        
+        // Execute
+        Client result = clientService.login(email, password);
+        
+        // Verify
+        assertNotNull(result);
+        assertEquals(email, result.getEmail());
+        assertEquals("John Smith", result.getName());
+    }
+    
+    @Test
+    void testLoginFailure() {
+        // Setup
+        String email = "john@example.com";
+        String password = "wrongpassword";
+        Client mockClient = new FacultyMember("FM001", "John Smith", email, "password", "F123", "Computer Science");
+        when(clientDAO.getAll()).thenReturn(Arrays.asList(mockClient));
+        
+        // Execute
+        Client result = clientService.login(email, password);
+        
+        // Verify
+        assertNull(result);
     }
 }

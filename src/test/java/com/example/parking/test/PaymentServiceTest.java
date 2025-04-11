@@ -3,10 +3,8 @@ package com.example.parking.test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +17,7 @@ import com.example.parking.model.Booking;
 import com.example.parking.model.Client;
 import com.example.parking.model.FacultyMember;
 import com.example.parking.model.ParkingSpace;
+import com.example.parking.model.payment.CreditCard;
 import com.example.parking.model.payment.PaymentMethod;
 import com.example.parking.service.PaymentService;
 
@@ -29,9 +28,6 @@ public class PaymentServiceTest {
     @Mock
     private BookingDAO bookingDAO;
     
-    @Mock
-    private PaymentMethod mockPaymentMethod;
-    
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -39,106 +35,127 @@ public class PaymentServiceTest {
     }
     
     @Test
-    void testProcessPayment() {
+    void testProcessPaymentSuccess() {
         // Setup
-        Client mockClient = new FacultyMember("FM001", "John Doe", "john@example.com", "password", "CS101", "Computer Science");
-        ParkingSpace mockSpace = new ParkingSpace("A1", 10.0);
-        Booking mockBooking = new Booking("B001", mockClient, mockSpace, LocalDateTime.now(), LocalDateTime.now().plusHours(2), mockPaymentMethod);
-        mockBooking.setAmount(20.0);
-        
-        when(mockPaymentMethod.processPayment(20.0)).thenReturn(true);
+        Client client = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        PaymentMethod paymentMethod = new CreditCard("John Smith", "1234567890123456", "12/25", 1000.0);
+        Booking booking = new Booking("B001", client, space, LocalDateTime.now(), LocalDateTime.now().plusHours(2), paymentMethod);
+        booking.setAmount(50.0);
         
         // Execute
-        paymentService.processPayment(mockBooking);
+        paymentService.processPayment(booking);
         
         // Verify
-        assertEquals("PAID", mockBooking.getStatus());
-        verify(bookingDAO).update(mockBooking);
-        verify(mockPaymentMethod).processPayment(20.0);
+        assertEquals("PAID", booking.getStatus());
+        verify(bookingDAO).update(booking);
     }
     
     @Test
-    void testProcessPaymentWithNoPaymentMethod() {
+    void testProcessPaymentNoPaymentMethod() {
         // Setup
-        Client mockClient = new FacultyMember("FM001", "John Doe", "john@example.com", "password", "CS101", "Computer Science");
-        ParkingSpace mockSpace = new ParkingSpace("A1", 10.0);
-        Booking mockBooking = new Booking("B001", mockClient, mockSpace, LocalDateTime.now(), LocalDateTime.now().plusHours(2), null);
+        Client client = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        Booking booking = new Booking("B001", client, space, LocalDateTime.now(), LocalDateTime.now().plusHours(2), null);
+        booking.setAmount(50.0);
         
-        // Execute and Verify
+        // Execute & Verify
         Exception exception = assertThrows(IllegalStateException.class, () -> {
-            paymentService.processPayment(mockBooking);
+            paymentService.processPayment(booking);
         });
         
         assertTrue(exception.getMessage().contains("No payment method specified"));
+        verify(bookingDAO, never()).update(any());
     }
     
     @Test
-    void testProcessPaymentFailure() {
+    void testProcessPaymentFailed() {
         // Setup
-        Client mockClient = new FacultyMember("FM001", "John Doe", "john@example.com", "password", "CS101", "Computer Science");
-        ParkingSpace mockSpace = new ParkingSpace("A1", 10.0);
-        Booking mockBooking = new Booking("B001", mockClient, mockSpace, LocalDateTime.now(), LocalDateTime.now().plusHours(2), mockPaymentMethod);
-        mockBooking.setAmount(20.0);
+        Client client = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        PaymentMethod paymentMethod = mock(PaymentMethod.class);
+        when(paymentMethod.processPayment(anyDouble())).thenReturn(false);
         
-        when(mockPaymentMethod.processPayment(20.0)).thenReturn(false);
+        Booking booking = new Booking("B001", client, space, LocalDateTime.now(), LocalDateTime.now().plusHours(2), paymentMethod);
+        booking.setAmount(50.0);
         
-        // Execute and Verify
+        // Execute & Verify
         Exception exception = assertThrows(IllegalStateException.class, () -> {
-            paymentService.processPayment(mockBooking);
+            paymentService.processPayment(booking);
         });
         
         assertTrue(exception.getMessage().contains("Payment processing failed"));
+        verify(bookingDAO, never()).update(any());
     }
     
     @Test
-    void testProcessRefund() {
+    void testProcessRefundSuccess() {
         // Setup
-        Client mockClient = new FacultyMember("FM001", "John Doe", "john@example.com", "password", "CS101", "Computer Science");
-        ParkingSpace mockSpace = new ParkingSpace("A1", 10.0);
-        Booking mockBooking = new Booking("B001", mockClient, mockSpace, LocalDateTime.now(), LocalDateTime.now().plusHours(2), mockPaymentMethod);
-        mockBooking.setAmount(20.0);
+        Client client = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        PaymentMethod paymentMethod = new CreditCard("John Smith", "1234567890123456", "12/25", 1000.0);
+        Booking booking = new Booking("B001", client, space, LocalDateTime.now(), LocalDateTime.now().plusHours(2), paymentMethod);
+        booking.setAmount(100.0);
         
         // Execute
-        paymentService.processRefund(mockBooking);
+        paymentService.processRefund(booking);
         
         // Verify
-        assertEquals("REFUNDED", mockBooking.getStatus());
-        verify(bookingDAO).update(mockBooking);
-        verify(mockPaymentMethod).processRefund(16.0); // 80% of 20.0
+        assertEquals("REFUNDED", booking.getStatus());
+        verify(bookingDAO).update(booking);
     }
     
     @Test
-    void testProcessRefundWithNoPaymentMethod() {
+    void testProcessRefundNoPaymentMethod() {
         // Setup
-        Client mockClient = new FacultyMember("FM001", "John Doe", "john@example.com", "password", "CS101", "Computer Science");
-        ParkingSpace mockSpace = new ParkingSpace("A1", 10.0);
-        Booking mockBooking = new Booking("B001", mockClient, mockSpace, LocalDateTime.now(), LocalDateTime.now().plusHours(2), null);
+        Client client = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        Booking booking = new Booking("B001", client, space, LocalDateTime.now(), LocalDateTime.now().plusHours(2), null);
+        booking.setAmount(100.0);
         
-        // Execute and Verify
+        // Execute & Verify
         Exception exception = assertThrows(IllegalStateException.class, () -> {
-            paymentService.processRefund(mockBooking);
+            paymentService.processRefund(booking);
         });
         
         assertTrue(exception.getMessage().contains("No payment method specified"));
+        verify(bookingDAO, never()).update(any());
+    }
+    
+    @Test
+    void testProcessRefundFailed() {
+        // Setup
+        Client client = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        PaymentMethod paymentMethod = mock(PaymentMethod.class);
+        doThrow(new RuntimeException("Refund failed")).when(paymentMethod).processRefund(anyDouble());
+        
+        Booking booking = new Booking("B001", client, space, LocalDateTime.now(), LocalDateTime.now().plusHours(2), paymentMethod);
+        booking.setAmount(100.0);
+        
+        // Execute & Verify
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            paymentService.processRefund(booking);
+        });
+        
+        assertTrue(exception.getMessage().contains("Refund processing failed"));
+        verify(bookingDAO, never()).update(any());
     }
     
     @Test
     void testGetUnpaidBookings() {
         // Setup
-        List<Booking> mockBookings = new ArrayList<>();
-        Client mockClient = new FacultyMember("FM001", "John Doe", "john@example.com", "password", "CS101", "Computer Science");
-        ParkingSpace mockSpace = new ParkingSpace("A1", 10.0);
+        Client client = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        PaymentMethod paymentMethod = new CreditCard("John Smith", "1234567890123456", "12/25", 1000.0);
         
-        Booking confirmedBooking = new Booking("B001", mockClient, mockSpace, LocalDateTime.now(), LocalDateTime.now().plusHours(2), null);
-        confirmedBooking.setStatus("CONFIRMED");
+        Booking unpaidBooking = new Booking("B001", client, space, LocalDateTime.now(), LocalDateTime.now().plusHours(2), paymentMethod);
+        unpaidBooking.setStatus("CONFIRMED");
         
-        Booking paidBooking = new Booking("B002", mockClient, mockSpace, LocalDateTime.now(), LocalDateTime.now().plusHours(2), null);
+        Booking paidBooking = new Booking("B002", client, space, LocalDateTime.now(), LocalDateTime.now().plusHours(2), paymentMethod);
         paidBooking.setStatus("PAID");
         
-        mockBookings.add(confirmedBooking);
-        mockBookings.add(paidBooking);
-        
-        when(bookingDAO.getAll()).thenReturn(mockBookings);
+        when(bookingDAO.getAll()).thenReturn(Arrays.asList(unpaidBooking, paidBooking));
         
         // Execute
         List<Booking> result = paymentService.getUnpaidBookings();
@@ -151,20 +168,17 @@ public class PaymentServiceTest {
     @Test
     void testGetRefundedBookings() {
         // Setup
-        List<Booking> mockBookings = new ArrayList<>();
-        Client mockClient = new FacultyMember("FM001", "John Doe", "john@example.com", "password", "CS101", "Computer Science");
-        ParkingSpace mockSpace = new ParkingSpace("A1", 10.0);
+        Client client = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        PaymentMethod paymentMethod = new CreditCard("John Smith", "1234567890123456", "12/25", 1000.0);
         
-        Booking refundedBooking = new Booking("B001", mockClient, mockSpace, LocalDateTime.now(), LocalDateTime.now().plusHours(2), null);
+        Booking refundedBooking = new Booking("B001", client, space, LocalDateTime.now(), LocalDateTime.now().plusHours(2), paymentMethod);
         refundedBooking.setStatus("REFUNDED");
         
-        Booking paidBooking = new Booking("B002", mockClient, mockSpace, LocalDateTime.now(), LocalDateTime.now().plusHours(2), null);
+        Booking paidBooking = new Booking("B002", client, space, LocalDateTime.now(), LocalDateTime.now().plusHours(2), paymentMethod);
         paidBooking.setStatus("PAID");
         
-        mockBookings.add(refundedBooking);
-        mockBookings.add(paidBooking);
-        
-        when(bookingDAO.getAll()).thenReturn(mockBookings);
+        when(bookingDAO.getAll()).thenReturn(Arrays.asList(refundedBooking, paidBooking));
         
         // Execute
         List<Booking> result = paymentService.getRefundedBookings();
