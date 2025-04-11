@@ -17,7 +17,6 @@ import com.example.parking.model.Booking;
 import com.example.parking.model.Client;
 import com.example.parking.model.FacultyMember;
 import com.example.parking.model.ParkingSpace;
-import com.example.parking.model.payment.CreditCard;
 import com.example.parking.model.payment.PaymentMethod;
 import com.example.parking.service.PaymentService;
 

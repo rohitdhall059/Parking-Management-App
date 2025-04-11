@@ -15,8 +15,10 @@ public class ParkingSpace {
     private boolean isDisabled;
     private double rate;
     private String licensePlate;
+    private boolean occupied;
     private List<Observer> observers;
     private ParkingSpaceState state;
+    private boolean enabled;
 
     public ParkingSpace(String spaceId, double rate) {
         this.spaceId = spaceId;
@@ -27,6 +29,13 @@ public class ParkingSpace {
         this.state = new AvailableState();
     }
 
+    public boolean isOccupied() {
+        return occupied;
+    }
+    
+    public boolean isEnabled() {
+        return enabled;
+    }
     // Observer methods
     public void attach(Observer observer) {
         observers.add(observer);

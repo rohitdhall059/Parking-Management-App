@@ -35,6 +35,7 @@ public class Booking {
     public void setBookingId(String bookingId) { this.bookingId = bookingId; }
 
     public Client getClient() { return client; } // Getter for Client
+    public String getClientId() { return client.getId(); } 
     public void setClient(Client client) { this.client = client; } // Setter for Client
 
     public ParkingSpace getSpaceId() { return spaceId; }
