@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.parking.model.payment.PaymentMethod; // Ensure this package and class exist
 import com.example.parking.strategy.PricingStrategy;
+
 public abstract class Client {
     protected String email;
     protected String password;
@@ -15,14 +16,30 @@ public abstract class Client {
     protected PaymentMethod paymentMethod;
     protected String id; // Unique identifier for the client
 
-    public Client(String email, String password, String name, String password2) {
+    public Client(String email, String password, String name) {
         this.email = email;
+        this.password = password;
+        this.name = name;
         this.registrationStatus = "ACTIVE";
         this.car = null;
     }
 
-    public Client(String clientId, String name2, String email2, String password2, Object object, Object object2) {
-        //TODO Auto-generated constructor stub
+    public Client(String clientId, String name, String email, String password, 
+                  PricingStrategy strategy, Car car) {
+        this.id = clientId;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.registrationStatus = "ACTIVE";
+        this.parkingRateStrategy = strategy;
+        this.car = car;
+    }
+
+    public Client(String clientId, String name, String email, String password) {
+        this.id = clientId;
+        this.name = name;
+        this.email = email;
+        this.password = password;
     }
 
     public String getId() {
@@ -54,12 +71,12 @@ public abstract class Client {
     }
 
     public abstract double getDiscountRate();
-	
-	public String getStatus() {
-		return status;
-	}
+
+    public String getStatus() {
+        return registrationStatus;
+    }
 
     public Object getPassword() {
         return password;
     }
-} 
+}

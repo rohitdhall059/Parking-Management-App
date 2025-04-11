@@ -18,11 +18,11 @@ public class Visitor extends Client implements Observer {
         this.visitorId = visitorId;
     }
 
-    public String getvisitInformation() {
+    public String getVisitInformation() {
         return visitInformation;
     }
 
-    public void setvisitInformation(String visitInformation) {
+    public void setVisitInformation(String visitInformation) {
         this.visitInformation = visitInformation;
     }
     public String getVisitorId() {

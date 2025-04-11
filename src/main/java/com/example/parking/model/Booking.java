@@ -18,6 +18,7 @@ public class Booking {
     private PaymentMethod paymentMethod;
     private double deposit = 10.0; // Default deposit amount
     private String status;
+    private String licensePlate;
 
     public Booking(String bookingId, Client client, ParkingSpace space, LocalDateTime startTime, LocalDateTime endTime, PaymentMethod paymentMethod) {
         this.bookingId = bookingId;
@@ -57,8 +58,15 @@ public class Booking {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    // New method to get the ParkingSpace
+    //New method to get the ParkingSpace
     public ParkingSpace getParkingSpace() { return spaceId; }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
 
     @Override
     public String toString() {

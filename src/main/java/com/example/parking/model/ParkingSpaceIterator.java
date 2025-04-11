@@ -3,17 +3,17 @@ package com.example.parking.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParkingSpaceManager {
-    private static ParkingSpaceManager instance;
+public class ParkingSpaceIterator {
+    private static ParkingSpaceIterator instance;
     private Map<String, ParkingSpace> parkingSpaces;
 
-    private ParkingSpaceManager() {
+    private ParkingSpaceIterator() {
         parkingSpaces = new HashMap<>();
     }
 
-    public static ParkingSpaceManager getInstance() {
+    public static ParkingSpaceIterator getInstance() {
         if (instance == null) {
-            instance = new ParkingSpaceManager();
+            instance = new ParkingSpaceIterator();
         }
         return instance;
     }

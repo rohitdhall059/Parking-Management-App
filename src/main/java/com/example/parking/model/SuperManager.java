@@ -8,14 +8,14 @@ public class SuperManager {
     private SuperManager() {
         // Private constructor to enforce singleton pattern
     }
-
-    public static SuperManager getInstance() {
+    
+    public static synchronized SuperManager getInstance() {
         if (instance == null) {
             instance = new SuperManager();
         }
         return instance;
     }
-
+    
     public void generateManagementAccount() {
         // Logic to generate and assign a management account
         System.out.println("Generating management account for: " + email);

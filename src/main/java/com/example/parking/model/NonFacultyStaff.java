@@ -8,15 +8,6 @@ import com.example.parking.strategy.NonFacultyStaffPricing;
 public class NonFacultyStaff extends Client implements Observer {
     private String staffId;
     private String office;
-    private String email;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public NonFacultyStaff(String clientId, String name, String email, String password,
                            String staffId, String office) {
