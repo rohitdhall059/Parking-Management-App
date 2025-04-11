@@ -70,7 +70,7 @@ public class ParkingSpaceService {
      */
     public List<ParkingSpace> getAvailableSpaces() {
         return parkingSpaceDAO.getAll().stream()
-                .filter(space -> !space.isOccupied() && space.isEnabled())
+                .filter(space -> !space.isBooked() && space.isDisabled())
                 .toList();
     }
 

@@ -16,13 +16,13 @@ public class PaymentService {
     public void processPayment(Booking booking) {
         PaymentMethod paymentMethod = booking.getPaymentMethod();
         if (paymentMethod == null) {
-            throw new IllegalStateException("No payment method specified for booking: " + booking.getClientId());
+            throw new IllegalStateException("No payment method specified for booking: " + booking.getClient().getId());
         }
 
         // Process payment using the payment method
         boolean success = paymentMethod.processPayment(booking.getAmount());
         if (!success) {
-            throw new IllegalStateException("Payment processing failed for booking: " + booking.getClientId());
+            throw new IllegalStateException("Payment processing failed for booking: " + booking.getClient().getId());
         }
 
         // Update booking status
@@ -33,7 +33,7 @@ public class PaymentService {
     public void processRefund(Booking booking) {
         PaymentMethod paymentMethod = booking.getPaymentMethod();
         if (paymentMethod == null) {
-            throw new IllegalStateException("No payment method specified for booking: " + booking.getClientId());
+            throw new IllegalStateException("No payment method specified for booking: " + booking.getClient().getId());
         }
 
         // Calculate refund amount (e.g., 80% of the booking amount for cancellations)
@@ -42,7 +42,7 @@ public class PaymentService {
         try {
             paymentMethod.processRefund(refundAmount);
         } catch (Exception e) {
-            throw new IllegalStateException("Refund processing failed for booking: " + booking.getClientId(), e);
+            throw new IllegalStateException("Refund processing failed for booking: " + booking.getClient().getId(), e);
         }
 
         // Update booking status

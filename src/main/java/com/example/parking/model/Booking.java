@@ -1,4 +1,5 @@
 package com.example.parking.model;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -9,33 +10,33 @@ import com.example.parking.strategy.PricingStrategy;
 
 public class Booking {
     private String bookingId;
-    private String clientId; // or hold a Client reference
-    private ParkingSpace spaceId;  // Changed to hold a ParkingSpace reference
+    private Client client; // Direct reference to Client object
+    private ParkingSpace spaceId;  // Holds a ParkingSpace reference
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private double totalCost;
     private PaymentMethod paymentMethod;
     private double deposit = 10.0; // Default deposit amount
     private String status;
-    private ParkingSpace parkingSpace; // Assuming this is a reference to the ParkingSpace object
 
-    public Booking(String bookingId, Client client, ParkingSpace space, LocalDateTime startTime, LocalDateTime endTime, PaymentMethod paymentMethod2) {
+    public Booking(String bookingId, Client client, ParkingSpace space, LocalDateTime startTime, LocalDateTime endTime, PaymentMethod paymentMethod) {
         this.bookingId = bookingId;
-        this.clientId = client.getId(); // Assuming Client has a getClientId() method
+        this.client = client; // Assigning Client object directly
         this.spaceId = space; // Assigning ParkingSpace directly
         this.startTime = startTime;
         this.endTime = endTime;
-        this.paymentMethod = paymentMethod2;
+        this.paymentMethod = paymentMethod;
+        this.status = "Active"; // Default status
     }
 
     // Getters/Setters
     public String getBookingId() { return bookingId; }
     public void setBookingId(String bookingId) { this.bookingId = bookingId; }
 
-    public String getClientId() { return clientId; }
-    public void setClientId(String clientId) { this.clientId = clientId; }
+    public Client getClient() { return client; } // Getter for Client
+    public void setClient(Client client) { this.client = client; } // Setter for Client
 
-    public String getSpaceId() { return spaceId.getId(); }
+    public ParkingSpace getSpaceId() { return spaceId; }
     public void setSpaceId(ParkingSpace spaceId) { this.spaceId = spaceId; }
 
     public LocalDateTime getStartTime() { return startTime; }
@@ -53,9 +54,15 @@ public class Booking {
     public double getDeposit() { return deposit; }
     public void setDeposit(double deposit) { this.deposit = deposit; }
 
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    // New method to get the ParkingSpace
+    public ParkingSpace getParkingSpace() { return spaceId; }
+
     @Override
     public String toString() {
-        return "Booking {" + "bookingID = '" + bookingId + '\'' + ", clientID = '" + clientId + '\'' + ", spaceID = '" + spaceId + '\'' + ", startTime = " + startTime + ", endTime = " + endTime + ", totalCost = " + totalCost + '}';
+        return "Booking {" + "bookingID = '" + bookingId + '\'' + ", clientID = '" + client.getId() + '\'' + ", spaceID = '" + spaceId.getId() + '\'' + ", startTime = " + startTime + ", endTime = " + endTime + ", totalCost = " + totalCost + '}';
     }
 
     // Method to create a booking
@@ -77,6 +84,7 @@ public class Booking {
         System.out.println("Checking out booking: " + bookingId);
         totalCost -= deposit;
         System.out.println("Total cost after deducting deposit: " + totalCost);
+        this.status = "Checked Out"; // Update status
     }
 
     // Method to calculate refund based on time remaining
@@ -124,6 +132,7 @@ public class Booking {
         }
 
         System.out.println("Booking canceled: " + bookingId);
+        this.status = "Canceled"; // Update status
     }
 
     // Method to process payment
@@ -149,20 +158,12 @@ public class Booking {
     public void setAmount(double amount) {
         this.totalCost = amount;
     }
+
     public double getAmount() {
         return this.totalCost;
     }
+
     public void setOccupied(boolean occupied, Car car) {
         this.spaceId.setOccupied(occupied, car);
     }
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    public String getStatus() {
-        return status;
-    }
-    public ParkingSpace getParkingSpace() {
-        return this.parkingSpace;
-    }
-    
 }

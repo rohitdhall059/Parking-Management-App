@@ -4,7 +4,7 @@ import com.example.parking.model.ParkingSpace;
 public class AvailableState implements ParkingSpaceState {
     @Override
     public void occupy(ParkingSpace space, String licensePlate) {
-        if (space.isEnabled()) {
+        if (space.isDisabled()) {
             //space.setOccupied(true, new Car(licensePlate));
             space.setState(new OccupiedState());
             System.out.println("Parking space " + space.getId() + " is now occupied by car with license plate: " + licensePlate);

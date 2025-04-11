@@ -18,7 +18,7 @@ public class ParkingSpaceIterator {
     public boolean hasNext() {
         while (position < parkingSpaces.size()) {
             ParkingSpace space = parkingSpaces.get(position);
-            if (!isEnabledOnly || (isEnabledOnly && space.isEnabled())) {
+            if (!isEnabledOnly || (isEnabledOnly && space.isDisabled())) {
                 return true;
             }
             position++;
