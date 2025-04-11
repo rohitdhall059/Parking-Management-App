@@ -32,6 +32,7 @@ import com.example.parking.model.ParkingSpace;
 import com.example.parking.model.payment.CreditCard;
 import com.example.parking.model.payment.PaymentMethod;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class DAOClassesTest {
@@ -179,5 +180,86 @@ public class DAOClassesTest {
         // Test getByClientId method
         List<Booking> clientBookings = bookingDAO.getByClientId("FM001");
         // In a real test with file operations, we'd verify the contents
+    }
+
+    @Test
+    void testCSVBookingDAOFileOperations() throws IOException {
+        // Create temporary files for testing
+        Path tempBookingsFile = tempDir.resolve("bookings.csv");
+        Files.createFile(tempBookingsFile);
+        
+        // Initialize DAOs with real file paths
+        ClientDAO realClientDAO = new CSVClientDAO(clientsCsvPath);
+        ParkingSpaceDAO realParkingSpaceDAO = new ParkingSpaceDAOImpl();
+        BookingDAO realBookingDAO = new CSVBookingDAO(realClientDAO, realParkingSpaceDAO);
+        
+        // Setup test data
+        Client client = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        LocalDateTime startTime = LocalDateTime.now();
+        LocalDateTime endTime = startTime.plusHours(2);
+        PaymentMethod paymentMethod = new CreditCard("John Smith", "1234567890123456", "12/25", 1000.0);
+        
+        // Save client and space first
+        realClientDAO.save(client);
+        realParkingSpaceDAO.save(space);
+        
+        // Create and save bookings
+        Booking booking1 = new Booking("B001", client, space, startTime, endTime, paymentMethod);
+        booking1.setStatus("CONFIRMED");
+        
+        Booking booking2 = new Booking("B002", client, space, startTime.plusHours(3), endTime.plusHours(3), paymentMethod);
+        booking2.setStatus("CONFIRMED");
+        
+        // Test save operation
+        realBookingDAO.save(booking1);
+        realBookingDAO.save(booking2);
+        
+        // Verify file contents
+        List<String> lines = Files.readAllLines(tempBookingsFile);
+        assertTrue(lines.size() >= 2);
+        assertTrue(lines.get(0).contains("B001"));
+        assertTrue(lines.get(1).contains("B002"));
+        
+        // Test getById operation
+        Booking retrievedBooking = realBookingDAO.getById("B001");
+        assertNotNull(retrievedBooking);
+        assertEquals("B001", retrievedBooking.getBookingId());
+        assertEquals("CONFIRMED", retrievedBooking.getStatus());
+        
+        // Test getById with non-existent booking
+        Booking nonExistentBooking = realBookingDAO.getById("NONEXISTENT");
+        assertNull(nonExistentBooking);
+        
+        // Test getAll operation
+        List<Booking> allBookings = realBookingDAO.getAll();
+        assertNotNull(allBookings);
+        assertEquals(2, allBookings.size());
+        
+        // Test update operation
+        booking1.setStatus("COMPLETED");
+        realBookingDAO.update(booking1);
+        Booking updatedBooking = realBookingDAO.getById("B001");
+        assertEquals("COMPLETED", updatedBooking.getStatus());
+        
+        // Test delete operation
+        realBookingDAO.delete("B001");
+        Booking deletedBooking = realBookingDAO.getById("B001");
+        assertNull(deletedBooking);
+        
+        // Test getByClientId operation
+        List<Booking> clientBookings = realBookingDAO.getByClientId("FM001");
+        assertNotNull(clientBookings);
+        assertEquals(1, clientBookings.size());
+        assertEquals("B002", clientBookings.get(0).getBookingId());
+        
+        // Test error handling for file operations
+        // Create a booking with invalid data to trigger IOException
+        Booking invalidBooking = new Booking("B003", null, null, null, null, null);
+        assertThrows(RuntimeException.class, () -> realBookingDAO.save(invalidBooking));
+        
+        // Test file not found scenario
+        Files.delete(tempBookingsFile);
+        assertThrows(RuntimeException.class, () -> realBookingDAO.getAll());
     }
 }

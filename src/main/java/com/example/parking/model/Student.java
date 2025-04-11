@@ -28,6 +28,10 @@ public class Student extends Client implements Observer {
         return department;
     }
     
+    public String getMajor() {
+        return department;
+    }
+    
     public double getParkingRate() {
         StudentPricing pricing = new StudentPricing();
         return pricing.getRate();

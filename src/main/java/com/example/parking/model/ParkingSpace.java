@@ -89,10 +89,17 @@ public class ParkingSpace {
         return isBooked;
     }
 
+    public boolean isOccupied() {
+        return isBooked;
+    }
+
     public boolean isDisabled() {
         return isDisabled;
     }
     
+    public boolean isEnabled() {
+        return !isDisabled;
+    }
 
     public double getRate() {
         return rate;
