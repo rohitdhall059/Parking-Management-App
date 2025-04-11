@@ -12,4 +12,9 @@ public class NonFacultyStaffPricing implements PricingStrategy {
     public String getType() {
         return "NON_FACULTY_STAFF";
     }
+
+    public void setRate(double d) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setRate'");
+    }
 } 

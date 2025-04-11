@@ -12,4 +12,9 @@ public class VisitorPricing implements PricingStrategy {
     public String getType() {
         return "VISITOR";
     }
+
+    public void setRate(double d) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setRate'");
+    }
 } 

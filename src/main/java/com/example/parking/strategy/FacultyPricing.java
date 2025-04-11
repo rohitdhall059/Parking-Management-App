@@ -12,4 +12,9 @@ public class FacultyPricing implements PricingStrategy {
     public String getType() {
         return "FACULTY";
     }
+
+    public void setRate(double d) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setRate'");
+    }
 } 
