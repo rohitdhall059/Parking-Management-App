@@ -45,11 +45,16 @@ public class NonFacultyStaff extends Client implements Observer {
         NonFacultyStaffPricing pricing = new NonFacultyStaffPricing();
         return pricing.getRate();
     }
+
+    public boolean requiresValidation() {
+        return staffId == null || staffId.isEmpty();
+    }
+
     @Override
     public void update(ParkingSpace parkingSpace) {
-        String status = parkingSpace.isOccupied() ? "occupied" : "available";
+        String status = parkingSpace.isBooked() ? "occupied" : "available";
         System.out.println("NonFacultyStaff " + getName() + ": Parking space " + parkingSpace.getSpaceId() + " status changed to " + status);
-        if (parkingSpace.isOccupied()) {
+        if (parkingSpace.isBooked()) {
             System.out.println("Details: " + parkingSpace.getCarInfo());
         }
     }

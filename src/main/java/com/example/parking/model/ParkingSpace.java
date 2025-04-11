@@ -11,8 +11,8 @@ import com.example.parking.state.ParkingSpaceState;
 
 public class ParkingSpace {
     private String spaceId;
-    private boolean isOccupied;
-    private boolean isEnabled;
+    private boolean isBooked;
+    private boolean isDisabled;
     private double rate;
     private String licensePlate;
     private List<Observer> observers;
@@ -21,8 +21,8 @@ public class ParkingSpace {
     public ParkingSpace(String spaceId, double rate) {
         this.spaceId = spaceId;
         this.rate = rate;
-        this.isOccupied = false;
-        this.isEnabled = true;
+        this.isBooked = false;
+        this.isDisabled = true;
         this.observers = new ArrayList<>();
         this.state = new AvailableState();
     }
@@ -44,8 +44,8 @@ public class ParkingSpace {
 
     // New method to enable the space
     public void enable() {
-        if (!isEnabled) {
-            this.isEnabled = true;
+        if (!isDisabled) {
+            this.isDisabled = false;
             this.state = new AvailableState();
             notifyObservers();
         }
@@ -53,8 +53,8 @@ public class ParkingSpace {
 
     // New method to disable the space
     public void disable() {
-        this.isEnabled = false;
-        this.isOccupied = false;
+        this.isDisabled = false;
+        this.isBooked = false;
         this.licensePlate = null;
         this.state = new DisabledState();
         notifyObservers();
@@ -62,8 +62,8 @@ public class ParkingSpace {
 
     // New method to occupy the space
     public void occupy(String licensePlate) {
-        if (isEnabled && !isOccupied) {
-            this.isOccupied = true;
+        if (isDisabled && !isBooked) {
+            this.isBooked = true;
             this.licensePlate = licensePlate;
             this.state = new OccupiedState();
             notifyObservers();
@@ -72,8 +72,8 @@ public class ParkingSpace {
 
     // New method to vacate the space
     public void vacate() {
-        if (isOccupied) {
-            this.isOccupied = false;
+        if (isBooked) {
+            this.isBooked = false;
             this.licensePlate = null;
             this.state = new AvailableState();
             notifyObservers();
@@ -85,12 +85,12 @@ public class ParkingSpace {
         return spaceId;
     }
 
-    public boolean isOccupied() {
-        return isOccupied;
+    public boolean isBooked() {
+        return isBooked;
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
+    public boolean isDisabled() {
+        return isDisabled;
     }
     
 
@@ -110,8 +110,8 @@ public class ParkingSpace {
     public String toString() {
         return "ParkingSpace{" +
                 "spaceId='" + spaceId + '\'' +
-                ", isOccupied=" + isOccupied +
-                ", isEnabled=" + isEnabled +
+                ", isBooked=" + isBooked +
+                ", isDisabled=" + isDisabled +
                 ", rate=" + rate +
                 ", licensePlate='" + licensePlate + '\'' +
                 '}';
@@ -119,7 +119,7 @@ public class ParkingSpace {
     
     // Method to retrieve status as a string
     public String getStatus() {
-        return isEnabled ? (isOccupied ? "Occupied" : "Available") : "Disabled";
+        return isDisabled ? (isBooked ? "Occupied" : "Available") : "Disabled";
     }
 
     public void setState(ParkingSpaceState state) {
@@ -127,7 +127,7 @@ public class ParkingSpace {
     }
 
     public void setOccupied(boolean occupied, Car car) {
-        this.isOccupied = occupied;
+        this.isBooked = occupied;
         if (car != null) {
             this.licensePlate = car.getLicensePlate();
         } else {
@@ -142,7 +142,7 @@ public class ParkingSpace {
     }
 
     public String getCarInfo() {
-        return isOccupied ? "Car with license plate: " + licensePlate : "No car";
+        return isBooked ? "Car with license plate: " + licensePlate : "No car";
     }
 
     public String getId() {
@@ -150,7 +150,7 @@ public class ParkingSpace {
     }
 
     public void free() {
-        this.isOccupied = false;
+        this.isBooked = false;
         this.licensePlate = null;
         this.state = new AvailableState();
         notifyObservers();
@@ -158,5 +158,8 @@ public class ParkingSpace {
 
     public void setEnabled(boolean b) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+    public List<Observer> getObservers() {
+        return observers; // Assuming 'observers' is the list of observers in ParkingSpace
     }
 }

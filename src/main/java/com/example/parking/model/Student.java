@@ -12,20 +12,20 @@ public class Student extends Client implements Observer {
         return 0.15; // Example: 15% discount
     }
 
-    private String major;
+    private String department;
     private String year;
     private String studentId;
 
-    public Student(String clientId, String name, String email, String password, String studentId, String major, String year) {
+    public Student(String clientId, String name, String email, String password, String studentId, String department, String year) {
         super(clientId, name, email, password, null, null); // Initialize with null car and pricing strategy
         this.studentId = studentId;
-        this.major = major;
+        this.department = department;
         this.year = year;
     }
 
    
-    public String getMajor() {
-        return major;
+    public String getDepartment() {
+        return department;
     }
     
     public double getParkingRate() {
@@ -33,8 +33,8 @@ public class Student extends Client implements Observer {
         return pricing.getRate();
     }
 
-    public void setMajor(String major) {
-        this.major = major;
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     public String getYear() {
@@ -53,11 +53,15 @@ public class Student extends Client implements Observer {
         this.studentId = studentId;
     }
 
+    public boolean requiresValidation() {
+        return studentId == null || studentId.isEmpty();
+    }
+
     @Override
     public void update(ParkingSpace parkingSpace) {
-        String status = parkingSpace.isOccupied() ? "occupied" : "available";
+        String status = parkingSpace.isBooked() ? "occupied" : "available";
         System.out.println("Student " + getName() + ": Parking space " + parkingSpace.getSpaceId() + " status changed to " + status);
-        if (parkingSpace.isOccupied()) {
+        if (parkingSpace.isBooked()) {
             System.out.println("Details: " + parkingSpace.getCarInfo());
         }
     }
@@ -65,7 +69,7 @@ public class Student extends Client implements Observer {
     public String toString() {
         return "Student{" +
                 "studentId='" + studentId + '\'' +
-                ", major='" + major + '\'' +
+                ", department='" + department + '\'' +
                 ", year='" + year + '\'' +
                 ", " + super.toString() +
                 '}';

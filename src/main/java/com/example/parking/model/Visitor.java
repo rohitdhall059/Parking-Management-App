@@ -49,9 +49,9 @@ public class Visitor extends Client implements Observer {
     @Override
     public void update(ParkingSpace parkingSpace) {
         // Handle the parking space update notification
-        String status = parkingSpace.isOccupied() ? "occupied" : "available";
+        String status = parkingSpace.isBooked()? "occupied" : "available";
         System.out.println("Visitor " + name + ": Parking space status changed to " + status);
-        if (parkingSpace.isOccupied()) {
+        if (parkingSpace.isBooked()) {
             System.out.println("Details: " + parkingSpace.getCarInfo());
         }
     }

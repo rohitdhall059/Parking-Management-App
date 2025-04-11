@@ -36,11 +36,16 @@ public class FacultyMember extends Client implements Observer {
         return facultyPricing.getRate();
     }
     
+    public boolean requiresValidation() {
+        return facultyId == null || facultyId.isEmpty();
+    }
+
+
     @Override
     public void update(ParkingSpace parkingSpace) {
-        String status = parkingSpace.isOccupied() ? "occupied" : "available";
+        String status = parkingSpace.isBooked() ? "occupied" : "available";
         System.out.println("Faculty " + getName() + ": Parking space " + parkingSpace.getSpaceId() + " status changed to " + status);
-        if (parkingSpace.isOccupied()) {
+        if (parkingSpace.isBooked()) {
             System.out.println("Details: " + parkingSpace.getCarInfo());
         }
     }

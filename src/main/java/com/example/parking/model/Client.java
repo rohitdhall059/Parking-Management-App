@@ -8,7 +8,7 @@ public abstract class Client {
     protected String email;
     protected String password;
     protected String name;
-    protected String status; // Added status field
+    protected String registrationStatus; // Added status field
     protected PricingStrategy parkingRateStrategy;
     protected Car car; // Added car field
     protected List<Booking> bookings;
@@ -17,7 +17,7 @@ public abstract class Client {
 
     public Client(String email, String password, String name, String password2) {
         this.email = email;
-        this.status = "ACTIVE";
+        this.registrationStatus = "ACTIVE";
         this.car = null;
     }
 
@@ -42,7 +42,7 @@ public abstract class Client {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        registrationStatus = status;
     }
 
     public Car getCar() {

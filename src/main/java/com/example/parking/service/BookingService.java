@@ -51,7 +51,7 @@ public class BookingService {
         }
 
         // Check if space is available
-        if (space.isOccupied()) {
+        if (space.isBooked()) {
             throw new IllegalStateException("Parking space is already occupied: " + spaceId);
         }
 

@@ -64,7 +64,7 @@ public class Sensor implements Observer {
         if (!isActive) {
             return "Sensor inactive";
         }
-        return parkingSpace.isOccupied() ? parkingSpace.getLicensePlate() : "No car";
+        return parkingSpace.isBooked() ? parkingSpace.getLicensePlate() : "No car";
     }
 
     public void activate() {
