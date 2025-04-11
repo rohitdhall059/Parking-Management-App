@@ -3,7 +3,6 @@ package com.example.parking.test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 

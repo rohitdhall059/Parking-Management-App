@@ -3,15 +3,8 @@ package com.example.parking.test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +33,8 @@ public class DAOClassesTest {
     Path tempDir;
     
     private String clientsCsvPath;
+    
+    
     private String bookingsCsvPath;
     
     private ClientDAO clientDAO;
@@ -178,6 +173,8 @@ public class DAOClassesTest {
         
         // Test getByClientId method
         List<Booking> clientBookings = bookingDAO.getByClientId("FM001");
+        assertNotNull(clientBookings);
+        assertFalse(clientBookings.isEmpty(), "Client bookings should not be empty");
         // In a real test with file operations, we'd verify the contents
     }
 }

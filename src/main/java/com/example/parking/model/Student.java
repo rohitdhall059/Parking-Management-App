@@ -14,6 +14,7 @@ public class Student extends Client implements Observer {
 
     private String department;
     private String year;
+    private String major;
     private String studentId;
 
     public Student(String clientId, String name, String email, String password, String studentId, String department, String year) {
@@ -23,6 +24,13 @@ public class Student extends Client implements Observer {
         this.year = year;
     }
 
+    public String getMajor() { // Add getter for major
+        return major;
+    }
+    
+    public void setMajor(String major) { // Add setter for major
+        this.major = major;
+    }
    
     public String getDepartment() {
         return department;
