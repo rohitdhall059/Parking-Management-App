@@ -54,6 +54,10 @@ public abstract class Client {
     }
 
     public abstract double getDiscountRate();
+	
+	public String getStatus() {
+		return status;
+	}
 
     public Object getPassword() {
         return password;
