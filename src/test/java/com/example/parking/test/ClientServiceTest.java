@@ -14,9 +14,7 @@ import org.mockito.MockitoAnnotations;
 import com.example.parking.dao.ClientDAO;
 import com.example.parking.model.Client;
 import com.example.parking.model.FacultyMember;
-import com.example.parking.model.NonFacultyStaff;
 import com.example.parking.model.Student;
-import com.example.parking.model.Visitor;
 import com.example.parking.service.ClientService;
 
 public class ClientServiceTest {

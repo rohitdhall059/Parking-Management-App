@@ -85,7 +85,7 @@ public class ModelClassesTest {
         assertEquals("VI001", visitor.getId());
         assertEquals("Alice Brown", visitor.getName());
         assertEquals("alice@example.com", visitor.getEmail());
-        assertEquals("Conference", visitor.getvisitInformation());
+        assertEquals("Conference", visitor.getVisitInformation());
         assertEquals("V123", visitor.getVisitorId());
         assertEquals(0.1, visitor.getDiscountRate()); // 10% discount
         

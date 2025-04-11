@@ -16,7 +16,6 @@ import com.example.parking.dao.BookingDAO;
 import com.example.parking.dao.ClientDAO;
 import com.example.parking.dao.ParkingSpaceDAO;
 import com.example.parking.model.Booking;
-import com.example.parking.model.Car;
 import com.example.parking.model.Client;
 import com.example.parking.model.FacultyMember;
 import com.example.parking.model.ParkingSpace;

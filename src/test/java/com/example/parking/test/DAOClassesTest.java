@@ -35,8 +35,6 @@ public class DAOClassesTest {
     private String clientsCsvPath;
     
     
-    private String bookingsCsvPath;
-    
     private ClientDAO clientDAO;
     private ParkingSpaceDAO parkingSpaceDAO;
     private BookingDAO bookingDAO;
@@ -52,7 +50,7 @@ public class DAOClassesTest {
         MockitoAnnotations.openMocks(this);
         
         clientsCsvPath = tempDir.resolve("clients.csv").toString();
-        bookingsCsvPath = tempDir.resolve("bookings.csv").toString();
+        tempDir.resolve("bookings.csv").toString();
         
         clientDAO = new CSVClientDAO(clientsCsvPath);
         parkingSpaceDAO = new ParkingSpaceDAOImpl();
