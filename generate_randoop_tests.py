@@ -41,7 +41,7 @@ def generate_tests(class_names, output_limit=500):
     
     # Randoop command
     randoop_cmd = (
-        f"java -classpath {current_dir}/target/classes/:{current_dir}/randoop-lib/randoop-all-4.2.1.jar "
+        f"java -classpath {current_dir}\\target\\classes\\;{current_dir}\\randoop-lib\\randoop-all-4.2.1.jar "
         f"randoop.main.Main gentests --testclass={class_list} --output-limit={output_limit}"
     )
     
