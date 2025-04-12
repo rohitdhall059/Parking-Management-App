@@ -54,6 +54,10 @@ public abstract class Client {
         return email;
     }
 
+    public void setEmail(String email){
+        this.email = email;
+    }
+
     public void setParkingRateStrategy(PricingStrategy strategy) {
         this.parkingRateStrategy = strategy;
     }
@@ -71,10 +75,10 @@ public abstract class Client {
     }
 
     public abstract double getDiscountRate();
-
-    public String getStatus() {
-        return registrationStatus;
-    }
+	
+	public String getStatus() {
+		return registrationStatus;
+	}
 
     public Object getPassword() {
         return password;
