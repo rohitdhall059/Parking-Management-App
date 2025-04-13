@@ -21,6 +21,9 @@ public class Visitor extends Client implements Observer {
     public String getVisitInformation() {
         return visitInformation;
     }
+	public String getvisitInformation() {
+        return visitInformation;
+    }
 
     public void setVisitInformation(String visitInformation) {
         this.visitInformation = visitInformation;
