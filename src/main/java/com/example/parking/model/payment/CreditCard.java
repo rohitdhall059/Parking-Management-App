@@ -6,21 +6,19 @@ import java.time.format.DateTimeParseException;
 
 public class CreditCard extends PaymentMethod {
 
-    private String cardNumber;
     private String cardHolderName;
     private String expiry; // Expected format: "MM/yy", e.g. "03/25"
 
     public CreditCard(String cardHolderName, String cardNumber, String expiry, double amount) {
-        super(amount);
-        this.cardHolderName = cardHolderName;
-        this.cardNumber = cardNumber;
-        this.expiry = expiry;
+        super("credit", cardNumber, expiry, amount); // Pass type, cardNumber, and expiry to super
+        this.cardHolderName = cardHolderName; // Initialize cardHolderName
+        this.expiry = expiry; // Initialize expiry
     }
 
     @Override
     public boolean processPayment(double amount) {
         // 1. Validate the credit card number
-        if (!isValidCardNumber(cardNumber)) {
+        if (!isValidCardNumber(getCardNumber())) { // Use getCardNumber() from superclass
             System.out.println("Transaction failed: invalid credit card number.");
             return false;
         }
@@ -32,7 +30,7 @@ public class CreditCard extends PaymentMethod {
         }
 
         // 3. Mask the card number for display
-        String maskedCard = maskCardNumber(cardNumber);
+        String maskedCard = maskCardNumber(getCardNumber()); // Use getCardNumber() from superclass
 
         // 4. Perform a pseudo "approval"
         if (amount <= 0) {
@@ -42,13 +40,12 @@ public class CreditCard extends PaymentMethod {
 
         System.out.println("Credit card payment of $" + amount + " approved for " + cardHolderName 
             + " using card " + maskedCard + " (expires " + expiry + ").");
-        // Additional logic: contacting payment gateway, updating logs, etc.
         return true;
     }
 
     @Override
     public void processRefund(double amount) {
-        if (!isValidCardNumber(cardNumber)) {
+        if (!isValidCardNumber(getCardNumber())) { // Use getCardNumber() from superclass
             System.out.println("Refund failed: invalid credit card number.");
             return;
         }
@@ -58,7 +55,7 @@ public class CreditCard extends PaymentMethod {
             return;
         }
 
-        String maskedCard = maskCardNumber(cardNumber);
+        String maskedCard = maskCardNumber(getCardNumber()); // Use getCardNumber() from superclass
         System.out.println("Credit card refund of $" + amount + " processed for " + cardHolderName 
             + " using card " + maskedCard + " (expires " + expiry + ").");
     }
@@ -100,5 +97,17 @@ public class CreditCard extends PaymentMethod {
         // For a 16-digit card: "**** **** **** 1234" (or some variation).
         // We'll just do a simpler approach with 12 stars:
         return "************" + last4;
+    }
+
+    public Object getExpiry() {
+        if (expiry == null) {
+            throw new UnsupportedOperationException("Unimplemented method 'getExpiry'");
+        } else {
+            return expiry;
+        }
+    }
+
+    public Object getCardHolderName() {
+        return cardHolderName;
     }
 }

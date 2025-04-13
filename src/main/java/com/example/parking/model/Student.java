@@ -17,26 +17,25 @@ public class Student extends Client implements Observer {
     private String major;
     private String studentId;
 
-    public Student(String clientId, String name, String email, String password, String studentId, String department, String year) {
-        super(clientId, name, email, password, null, null); // Initialize with null car and pricing strategy
+    public Student(String clientId, String name, String email, String password, String studentId, String major, String year) {
+        super(clientId, (name == null || name.equals("null")) ? null : name, 
+              (email == null || email.equals("null")) ? null : email, password);
         this.studentId = studentId;
-        this.department = department;
+        this.major = major;
+        this.department = major;
         this.year = year;
     }
-
+    
     public String getMajor() { // Add getter for major
         return major;
     }
     
     public void setMajor(String major) { // Add setter for major
         this.major = major;
+        this.department = major;
     }
    
     public String getDepartment() {
-        return department;
-    }
-    
-    public String getMajor() {
         return department;
     }
     
@@ -47,6 +46,7 @@ public class Student extends Client implements Observer {
 
     public void setDepartment(String department) {
         this.department = department;
+        this.major = department;
     }
 
     public String getYear() {
@@ -79,11 +79,15 @@ public class Student extends Client implements Observer {
     }
     @Override
     public String toString() {
-        return "Student{" +
-                "studentId='" + studentId + '\'' +
+        return "Student{Name= " + name+
+                ", studentId='" + studentId + '\'' +
                 ", department='" + department + '\'' +
                 ", year='" + year + '\'' +
                 ", " + super.toString() +
                 '}';
+    }
+    @Override
+    public String getType() {
+        return "STUDENT"; // Return a string that identifies the type
     }
 }

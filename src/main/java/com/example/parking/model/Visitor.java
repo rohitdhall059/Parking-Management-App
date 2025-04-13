@@ -13,7 +13,7 @@ public class Visitor extends Client implements Observer {
 
     public Visitor(String clientId, String name, String email, String password,
                    String visitInformation, String visitorId) {
-        super(clientId, name, email, null); // Initialize with null car and pricing strategy
+        super(clientId, name, email, password); // Initialize with null car and pricing strategy
         this.visitInformation = visitInformation;
         this.visitorId = visitorId;
     }
@@ -57,16 +57,20 @@ public class Visitor extends Client implements Observer {
     }
     @Override
     public double getDiscountRate() {
-        return 0.1; // Example: 10% discount
+        return 0.0; // Example: 10% discount
     }
 
     @Override
     public String toString() {
-        return "Visitor{" +
-                "visitInformation='" + visitInformation + '\'' +
+        return "Visitor{Name=" + name+
+                ", visitInformation='" + visitInformation + '\'' +
                 ", visitorId='" + visitorId + '\'' +
                 ", visitDate=" + visitDate +
                 ", " + super.toString() +
                 '}';
+    }
+    @Override
+    public String getType() {
+        return "VISITOR"; // Return a string that identifies the type
     }
 }

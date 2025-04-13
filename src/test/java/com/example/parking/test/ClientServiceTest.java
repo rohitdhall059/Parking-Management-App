@@ -42,19 +42,19 @@ public class ClientServiceTest {
         boolean refundProcessed = false;
 
         public DummyPaymentMethod() {
-            // Use the constructor with one double parameter.
-            super(0);
+            // Call the superclass constructor with dummy values.
+            super("dummy", null, null, 0.0); // Use appropriate parameters
         }
 
         @Override
         public boolean processPayment(double amount) {
-            paymentProcessed = true;
-            return true;
+            paymentProcessed = true; // Simulate payment processing
+            return true; // Indicate success
         }
 
         @Override
         public void processRefund(double amount) {
-            refundProcessed = true;
+            refundProcessed = true; // Simulate refund processing
         }
     }
 
@@ -495,4 +495,37 @@ public class ClientServiceTest {
         // Verify
         assertNull(result);
     }
+    @Test
+    public void testExtendParkingTimeWithInvalidNewEndTime() {
+        Client client = new FacultyMember("F013", "Dr. Cyan", "cyan@example.com", "password", "FAC013", "Chemistry");
+        ParkingSpace space = new ParkingSpace("PS112", 15.0);
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = start.plusHours(2);
+        Booking booking = new Booking("B013", client, space, start, end, null);
+        
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            booking.extendParkingTime(end.minusHours(1), "faculty"); // New end time is before current end time
+        });
+        
+        assertTrue(exception.getMessage().contains("New end time must be after the current end time."));
+    }
+    @Test
+public void testProcessPaymentWithNoPaymentMethod() {
+    Client client = new FacultyMember("F015", "Dr. Olive", "olive@example.com", "password", "FAC015", "Art");
+    ParkingSpace space = new ParkingSpace("PS114", 14.0);
+    LocalDateTime start = LocalDateTime.now();
+    LocalDateTime end = start.plusHours(3);
+    Booking booking = new Booking("B015", client, space, start, end, null); // No payment method
+    
+    // Capture output
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    PrintStream originalOut = System.out;
+    System.setOut(new PrintStream(baos));
+
+    booking.processPayment(50.0); // Attempt to process payment
+
+    System.setOut(originalOut);
+    String output = baos.toString();
+    assertTrue(output.contains("No payment method set for this booking."));
+}
 }

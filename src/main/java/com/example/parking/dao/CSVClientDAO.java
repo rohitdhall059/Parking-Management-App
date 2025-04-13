@@ -21,44 +21,41 @@ public class CSVClientDAO implements ClientDAO {
     private final String filePath;
 
     public CSVClientDAO(String filePath) {
-        this.filePath = "clients.csv";
+        this.filePath = filePath;
     }
-
-    /**
-     * Saves a new client record to the CSV file.
-     * Appends the record to the end of the file.
-     */
+    
     @Override
     public void save(Client client) {
         try (FileWriter fw = new FileWriter(filePath, true);
-             BufferedWriter bw = new BufferedWriter(fw);
-             PrintWriter out = new PrintWriter(bw)) {
-            out.println(formatClient(client));
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw)) {
+            out.println(formatClient(client)); // Ensure this is correctly formatted
+            System.out.println("Saved client: " + client); // Debugging output
         } catch (IOException e) {
             throw new RuntimeException("Error saving client: " + e.getMessage());
         }
     }
 
-    /**
-     * Retrieves a client by their unique ID.
-     * Returns null if no client is found with the given ID.
-     */
+
     @Override
     public Client getById(String id) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
+                System.out.println("Reading line: " + line);  // Debugging line
+                String[] parts = line.split(",", -1);
                 if (parts[0].equals(id)) {
+                    System.out.println("Client found: " + parts[0]);  // Debugging line
                     return parseClient(parts);
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException("Error reading client: " + e.getMessage());
         }
-        return null;
+        System.out.println("Client not found with ID: " + id);  // Debugging line
+        return null;  // This might be causing the test to fail
     }
-
+    
     /**
      * Retrieves all client records from the CSV file.
      */
@@ -68,7 +65,7 @@ public class CSVClientDAO implements ClientDAO {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
+                String[] parts = line.split(",", -1); // Preserve empty fields
                 clients.add(parseClient(parts));
             }
         } catch (IOException e) {
@@ -124,34 +121,46 @@ public class CSVClientDAO implements ClientDAO {
      * Includes client ID, name, email, status, and car license plate.
      */
     private String formatClient(Client client) {
-        return String.format("%s,%s,%s,%s,%s",
-                client.getId(),
-                client.getName(),
-                client.getEmail(),
-                //client.getStatus(),
-                client.getCar() != null ? client.getCar().getLicensePlate() : "");
+        return String.format("%s,%s,%s,%s,%s,%s,%s",
+            client.getId(),
+            client.getName(),
+            client.getEmail(),
+            client.getPassword(),
+            client.getStatus(),
+            client.getType(), // Use defined type (like "FACULTY")
+            client.getCar() != null ? client.getCar().getLicensePlate() : "");
     }
+    
 
     /**
      * Parses a CSV line into a Client object.
      * Creates the appropriate client type based on ID prefix.
      */
     private Client parseClient(String[] parts) {
+        if (parts.length < 7) {
+            throw new IllegalArgumentException("Invalid client data: " + String.join(",", parts));
+        }
+    
         String id = parts[0];
         String name = parts[1];
         String email = parts[2];
-        String status = parts[3];
-        String carPlate = parts[4];
-
-        String type = id.substring(0, 2).toUpperCase();
+        String password = parts[3];
+        String status = parts[4]; // Adjusted to match the correct index
+        String type = parts[5]; // Assuming the type is now the 6th field in the CSV
+        String carPlate = parts[6]; // Assuming the car plate is now the 7th field
+    
         Client client = ClientFactory.createClient(type, id, name, email);
         client.setStatus(status);
-        
-        if (carPlate != null && !carPlate.isEmpty()) {
+        client.setPassword(password); // Set the password as well
+    
+        // Handle the car plate
+        if (carPlate != null && !carPlate.equals("null") && !carPlate.isEmpty()) {
             Car car = new Car(carPlate);
             client.setCar(car);
+        } else {
+            client.setCar(null); // Explicitly set car to null if the plate is "null"
         }
-        
+    
         return client;
     }
 }

@@ -23,11 +23,18 @@ public class ClientFactory {
      * @throws IllegalArgumentException if the type is invalid
      */
     public static Client createClient(String type, String id, String name, String email) {
+        if (type == null) {
+            throw new NullPointerException("Type cannot be null");
+        }
+        if (id == null || name == null || email == null) {
+            throw new NullPointerException("Client parameters cannot be null");
+        }
+    
         return switch (type.toUpperCase()) {
-            case "FM" -> new FacultyMember(id, name, email, "default1", "default2", "default3");
-            case "ST" -> new Student(id, name, email, "default1", "default2", "default3", "default4");
-            case "NF" -> new NonFacultyStaff(id, name, email, "default1", "default2", "default3");
-            case "VI" -> new Visitor(id, name, email, "default1", "default2", "default3");
+            case "FM", "FACULTY", "FACULTYMEMBER" -> new FacultyMember(id, name, email, "default1", "default2", "default3");
+            case "ST", "STUDENT" -> new Student(id, name, email, "default1", "default2", "default3", "default4");
+            case "NF", "NONFACULTY", "NONFACULTYSTAFF" -> new NonFacultyStaff(id, name, email, "default1", "default2", "default3");
+            case "VI", "VISITOR" -> new Visitor(id, name, email, "default1", "default2", "default3");
             default -> throw new IllegalArgumentException("Unknown client type: " + type);
         };
     }

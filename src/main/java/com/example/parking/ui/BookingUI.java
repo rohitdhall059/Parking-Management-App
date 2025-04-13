@@ -37,11 +37,12 @@ public class BookingUI extends JFrame {
         // Initialize DAOs
         ParkingSpaceDAO parkingSpaceDAO = new ParkingSpaceDAOImpl(); 
         ClientDAO clientDAO = new CSVClientDAO("path/to/client/data.csv"); 
-        BookingDAO bookingDAO = new CSVBookingDAO(clientDAO, parkingSpaceDAO);
-
+        // Provide the file path for the bookings CSV
+        BookingDAO bookingDAO = new CSVBookingDAO(clientDAO, parkingSpaceDAO, "path/to/booking/data.csv");
+    
         // Initialize BookingService
         bookingService = new BookingService(bookingDAO, clientDAO, parkingSpaceDAO);
-
+    
         // Create UI components
         setTitle("Parking Booking System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

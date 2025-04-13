@@ -14,7 +14,6 @@ public class FacultyPricing implements PricingStrategy {
     }
 
     public void setRate(double d) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setRate'");
+        throw new UnsupportedOperationException("Value cannot be modified");
     }
-} 
+}

@@ -1,9 +1,6 @@
 package com.example.parking.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -86,4 +83,27 @@ public class StudentTest {
         assertTrue(studentString.contains("3rd"));
         assertTrue(studentString.contains("John Doe"));
     }
-} 
+
+    // Additional Tests
+
+    @Test
+    void testSetMajorUpdatesDepartment() {
+        // Set a new major and verify that the department is updated accordingly
+        student.setMajor("Mathematics");
+        assertEquals("Mathematics", student.getMajor());
+        assertEquals("Mathematics", student.getDepartment()); // Ensure department is also updated
+    }
+
+    @Test
+    void testYearUpdate() {
+        // Update the year and verify the change
+        student.setYear("4th");
+        assertEquals("4th", student.getYear());
+    }
+
+    @Test
+    void testStudentType() {
+        // Verify that the type of student is "STUDENT"
+        assertEquals("STUDENT", student.getType());
+    }
+}

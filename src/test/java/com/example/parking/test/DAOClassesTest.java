@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.time.LocalDateTime;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -25,8 +26,11 @@ import com.example.parking.model.ParkingSpace;
 import com.example.parking.model.payment.CreditCard;
 import com.example.parking.model.payment.PaymentMethod;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class DAOClassesTest {
 
@@ -47,17 +51,47 @@ public class DAOClassesTest {
     private ParkingSpaceDAO mockParkingSpaceDAO;
     
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        
+    
+        // Create temporary files for testing
         clientsCsvPath = tempDir.resolve("clients.csv").toString();
-        tempDir.resolve("bookings.csv").toString();
-        
+        String bookingsCsvPath = tempDir.resolve("bookings.csv").toString();
+    
+        // Clear the file before each test
+        Files.deleteIfExists(Paths.get(clientsCsvPath));
+        Files.createFile(Paths.get(clientsCsvPath));
+    
+        // Initialize DAOs
         clientDAO = new CSVClientDAO(clientsCsvPath);
         parkingSpaceDAO = new ParkingSpaceDAOImpl();
-        bookingDAO = new CSVBookingDAO(mockClientDAO, mockParkingSpaceDAO);
+        bookingDAO = new CSVBookingDAO(clientDAO, parkingSpaceDAO, bookingsCsvPath);
     }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        new File("test_clients.csv").delete();
+        Files.deleteIfExists(Paths.get(clientsCsvPath));
+        Files.createFile(Paths.get(clientsCsvPath)); // Recreate empty file
+    }
+
+    @Test
+    void testCSVClientDAO1() {
+        // Save the client explicitly here
+        Client client1 = new FacultyMember("FM01", "John Doe", "john.doe@example.com", "password", "active", "valid");
+        clientDAO.save(client1);
+
+        Client retrievedClient = clientDAO.getById("FM01");
+
+        // Logging to verify
+        System.out.println("Retrieved client: " + retrievedClient);
+
+        assertNotNull(retrievedClient, "Client should not be null");
+        assertEquals("FM01", retrievedClient.getId(), "Client ID should match");
+    }
+
     
+ 
     @Test
     void testCSVClientDAO() {
         // Create test data
@@ -134,47 +168,51 @@ public class DAOClassesTest {
     
     @Test
     void testCSVBookingDAOMethods() {
-        // Setup mock data
-        Client mockClient = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
-        ParkingSpace mockSpace = new ParkingSpace("A1", 10.0);
+        // Setup test data
+        Client client = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        
+        // Save to real DAOs so they can be retrieved from CSVBookingDAO
+        clientDAO.save(client);
+        parkingSpaceDAO.save(space);
+
         LocalDateTime startTime = LocalDateTime.now();
         LocalDateTime endTime = startTime.plusHours(2);
-        PaymentMethod paymentMethod = new CreditCard("John Smith", "1234567890123456", "12/25", 1000.0);
+        PaymentMethod paymentMethod = new CreditCard("John Smith", "4111111111111111", "12/25", 1000.0);
         
-        Booking booking1 = new Booking("B001", mockClient, mockSpace, startTime, endTime, paymentMethod);
+        Booking booking1 = new Booking("B001", client, space, startTime, endTime, paymentMethod);
         booking1.setStatus("CONFIRMED");
         
-        Booking booking2 = new Booking("B002", mockClient, mockSpace, startTime.plusHours(3), endTime.plusHours(3), paymentMethod);
+        Booking booking2 = new Booking("B002", client, space, startTime.plusHours(3), endTime.plusHours(3), paymentMethod);
         booking2.setStatus("CONFIRMED");
-        
-        // Setup mock behavior
-        when(mockClientDAO.getById("FM001")).thenReturn(mockClient);
-        when(mockParkingSpaceDAO.getById("A1")).thenReturn(mockSpace);
-        
-        // Test operations using mocked dependencies
-        
-        // Test saving a booking
+
+        // Save bookings
         bookingDAO.save(booking1);
-        
-        // Test retrieving a booking by ID
-        // Note: Since we're mocking CSV file operations, we'll need to simulate the file content
-        // This is a simplified example, in real tests we'd need to handle file I/O properly
-        
-        // Test getAll method
-        // Again, this would need proper file handling in real tests
-        
-        // Test update method
+        bookingDAO.save(booking2);
+
+        // Test getById
+        Booking retrievedBooking = bookingDAO.getById("B001");
+        assertNotNull(retrievedBooking);
+        assertEquals("B001", retrievedBooking.getBookingId());
+
+        // Test getAll
+        List<Booking> allBookings = bookingDAO.getAll();
+        assertNotNull(allBookings);
+        assertEquals(2, allBookings.size());
+
+        // Test update
         booking1.setStatus("COMPLETED");
         bookingDAO.update(booking1);
-        
-        // Test delete method
+        assertEquals("COMPLETED", bookingDAO.getById("B001").getStatus());
+
+        // Test delete
         bookingDAO.delete("B001");
-        
-        // Test getByClientId method
+        assertNull(bookingDAO.getById("B001"));
+
+        // Test getByClientId
         List<Booking> clientBookings = bookingDAO.getByClientId("FM001");
-        assertNotNull(clientBookings);
-        assertFalse(clientBookings.isEmpty(), "Client bookings should not be empty");
-        // In a real test with file operations, we'd verify the contents
+        assertEquals(1, clientBookings.size());
+        assertEquals("B002", clientBookings.get(0).getBookingId());
     }
 
     @Test
@@ -186,14 +224,16 @@ public class DAOClassesTest {
         // Initialize DAOs with real file paths
         ClientDAO realClientDAO = new CSVClientDAO(clientsCsvPath);
         ParkingSpaceDAO realParkingSpaceDAO = new ParkingSpaceDAOImpl();
-        BookingDAO realBookingDAO = new CSVBookingDAO(realClientDAO, realParkingSpaceDAO);
+        BookingDAO realBookingDAO = new CSVBookingDAO(realClientDAO, realParkingSpaceDAO, tempBookingsFile.toString());
         
         // Setup test data
         Client client = new FacultyMember("FM001", "John Smith", "john@example.com", "password", "F123", "Computer Science");
         ParkingSpace space = new ParkingSpace("A1", 10.0);
         LocalDateTime startTime = LocalDateTime.now();
         LocalDateTime endTime = startTime.plusHours(2);
-        PaymentMethod paymentMethod = new CreditCard("John Smith", "1234567890123456", "12/25", 1000.0);
+        
+        // Use a valid card number format
+        PaymentMethod paymentMethod = new CreditCard("John Smith", "4111-1111-1111-1111", "12/25", 1000.0); // Example valid card number
         
         // Save client and space first
         realClientDAO.save(client);
@@ -256,5 +296,50 @@ public class DAOClassesTest {
         // Test file not found scenario
         Files.delete(tempBookingsFile);
         assertThrows(RuntimeException.class, () -> realBookingDAO.getAll());
+    }
+    @Test
+    void testCSVClientDAOGetByIdNonExistent() {
+        // Test getting a client by ID that does not exist
+        Client retrievedClient = clientDAO.getById("NON_EXISTENT_ID");
+        assertNull(retrievedClient, "Client should be null for non-existent ID");
+    }
+
+    @Test
+    void testCSVClientDAOUpdateNonExistent() {
+        // Test updating a client that does not exist
+        Client client = new FacultyMember("FM999", "Non Existent", "nonexistent@example.com", "password", "F999", "Unknown");
+        clientDAO.update(client); // Should not throw an exception
+        Client retrievedClient = clientDAO.getById("FM999");
+        assertNull(retrievedClient, "Client should still be null after update");
+    }
+
+    @Test
+    void testParkingSpaceDAOImplGetByIdNonExistent() {
+        // Test getting a parking space by ID that does not exist
+        ParkingSpace retrievedSpace = parkingSpaceDAO.getById("NON_EXISTENT_SPACE");
+        assertNull(retrievedSpace, "Parking space should be null for non-existent ID");
+    }
+
+    @Test
+    void testCSVBookingDAOGetByIdNonExistent() {
+        // Test getting a booking by ID that does not exist
+        Booking retrievedBooking = bookingDAO.getById("NON_EXISTENT_BOOKING");
+        assertNull(retrievedBooking, "Booking should be null for non-existent ID");
+    }
+    
+    @Test
+    void testBookingDAOGetByClientIdWithMock() {
+        // Create a mock BookingDAO
+        BookingDAO mockBookingDAO = mock(BookingDAO.class);
+        
+        // Setup the mock to return an empty list when getByClientId is called
+        when(mockBookingDAO.getByClientId("NON_EXISTENT_CLIENT")).thenReturn(List.of());
+        
+        // Test getting bookings for a non-existent client
+        List<Booking> clientBookings = mockBookingDAO.getByClientId("NON_EXISTENT_CLIENT");
+        
+        // Verify that the list is not null and is empty
+        assertNotNull(clientBookings, "Client bookings should not be null");
+        assertTrue(clientBookings.isEmpty(), "Client bookings should be empty for a non-existent client ID");
     }
 }

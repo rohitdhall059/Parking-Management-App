@@ -52,19 +52,21 @@ public class BookingServiceTest {
         PaymentMethod paymentMethod = new CreditCard("John Doe", "1234567890123456", "12/25", 1000.0);
         
         Client mockClient = new FacultyMember(clientId, "John Doe", "john@example.com", "password", "CS101", "Computer Science");
-        ParkingSpace mockSpace = new ParkingSpace(spaceId, 10.0);
+        ParkingSpace mockSpace = mock(ParkingSpace.class); // Create a mock for ParkingSpace
+        when(mockSpace.getId()).thenReturn(spaceId); // Stub getId method
+        when(mockSpace.getRate()).thenReturn(10.0); // Stub getRate method
+        when(mockSpace.isBooked()).thenReturn(false); // Stub isBooked method
         
         when(clientDAO.getById(clientId)).thenReturn(mockClient);
         when(parkingSpaceDAO.getById(spaceId)).thenReturn(mockSpace);
-        when(mockSpace.isOccupied()).thenReturn(false);
         
         // Execute
         Booking booking = bookingService.createBooking(clientId, spaceId, startTime, endTime, paymentMethod);
         
         // Verify
         assertNotNull(booking);
-        assertEquals(clientId, booking.getClientId());
-        assertEquals(spaceId, booking.getSpaceId());
+        assertEquals(clientId, booking.getClient().getId());
+        assertEquals(spaceId, booking.getParkingSpace().getId());
         assertEquals(startTime, booking.getStartTime());
         assertEquals(endTime, booking.getEndTime());
         assertEquals("CONFIRMED", booking.getStatus());
@@ -123,11 +125,11 @@ public class BookingServiceTest {
         PaymentMethod paymentMethod = new CreditCard("John Doe", "1234567890123456", "12/25", 1000.0);
         
         Client mockClient = new FacultyMember(clientId, "John Doe", "john@example.com", "password", "CS101", "Computer Science");
-        ParkingSpace mockSpace = new ParkingSpace(spaceId, 10.0);
+        ParkingSpace mockSpace = mock(ParkingSpace.class); // Create a mock for ParkingSpace
         
         when(clientDAO.getById(clientId)).thenReturn(mockClient);
         when(parkingSpaceDAO.getById(spaceId)).thenReturn(mockSpace);
-        when(mockSpace.isOccupied()).thenReturn(true);
+        when(mockSpace.isBooked()).thenReturn(true); // Stub isBooked to return true
         
         // Execute and Verify
         Exception exception = assertThrows(IllegalStateException.class, () -> {
@@ -297,5 +299,173 @@ public class BookingServiceTest {
         assertTrue(bookingString.contains("B002"));
         assertTrue(bookingString.contains("FM002"));
         assertTrue(bookingString.contains("A2"));
+    }
+    @Test
+    void testCreateBookingWithInvalidTimeRange() {
+        // Setup
+        String clientId = "FM001";
+        String spaceId = "A1";
+        LocalDateTime startTime = LocalDateTime.now().plusHours(3);
+        LocalDateTime endTime = LocalDateTime.now().plusHours(1);
+        PaymentMethod paymentMethod = new CreditCard("John Doe", "1234567890123456", "12/25", 1000.0);
+        
+        Client mockClient = new FacultyMember(clientId, "John Doe", "john@example.com", "password", "CS101", "Computer Science");
+        ParkingSpace mockSpace = mock(ParkingSpace.class);
+        
+        when(clientDAO.getById(clientId)).thenReturn(mockClient);
+        when(parkingSpaceDAO.getById(spaceId)).thenReturn(mockSpace);
+        when(mockSpace.isBooked()).thenReturn(false);
+        
+        // Execute and Verify
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            bookingService.createBooking(clientId, spaceId, startTime, endTime, paymentMethod);
+        });
+        
+        assertTrue(exception.getMessage().contains("End time must be after start time"));
+    }
+
+    @Test
+    void testCompleteNonExistentBooking() {
+        // Setup
+        String bookingId = "NONEXISTENT";
+        
+        when(bookingDAO.getById(bookingId)).thenReturn(null);
+        
+        // Execute and Verify
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            bookingService.completeBooking(bookingId);
+        });
+        
+        assertTrue(exception.getMessage().contains("Booking not found"));
+    }
+
+    @Test
+    void testCancelAlreadyCancelledBooking() {
+        // Setup
+        String bookingId = "B001";
+        
+        Client mockClient = new FacultyMember("FM001", "John Doe", "john@example.com", "password", "CS101", "Computer Science");
+        ParkingSpace mockSpace = new ParkingSpace("A1", 10.0);
+        Booking mockBooking = new Booking(bookingId, mockClient, mockSpace, LocalDateTime.now(), LocalDateTime.now().plusHours(2), null);
+        mockBooking.setStatus("CANCELLED");
+        
+        when(bookingDAO.getById(bookingId)).thenReturn(mockBooking);
+        
+        // Execute and Verify
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            bookingService.cancelBooking(bookingId);
+        });
+        
+        assertTrue(exception.getMessage().contains("Booking is already cancelled"));
+    }
+
+    @Test
+    void testGetNonExistentBooking() {
+        // Setup
+        String bookingId = "NONEXISTENT";
+        
+        when(bookingDAO.getById(bookingId)).thenReturn(null);
+        
+        // Execute and Verify
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            bookingService.getBooking(bookingId);
+        });
+        
+        assertTrue(exception.getMessage().contains("Booking not found"));
+    }
+
+    @Test
+    void testGetBookingsByClientWithNoBookings() {
+        // Setup
+        String clientId = "FM001";
+        
+        when(bookingDAO.getByClientId(clientId)).thenReturn(new ArrayList<>()); // No bookings
+        
+        // Execute
+        List<Booking> result = bookingService.getBookingsByClient(clientId);
+        
+        // Verify
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetBookingsBySpaceWithNoBookings() {
+        // Setup
+        String spaceId = "A1";
+        
+        when(bookingDAO.getAll()).thenReturn(new ArrayList<>()); // No bookings
+        
+        // Execute
+        List<Booking> result = bookingService.getBookingsBySpace(spaceId);
+        
+        // Verify
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+    @Test
+    void testGetBookingsBySpaceWithExistingBookings() {
+        // Setup
+        String spaceId = "A1";
+        Client mockClient = new FacultyMember("FM001", "John Doe", "john@example.com", "password", "CS101", "Computer Science");
+        Booking mockBooking1 = new Booking("B001", mockClient, new ParkingSpace(spaceId, 10.0), LocalDateTime.now(), LocalDateTime.now().plusHours(2), null);
+        Booking mockBooking2 = new Booking("B002", mockClient, new ParkingSpace(spaceId, 10.0), LocalDateTime.now().plusHours(3), LocalDateTime.now().plusHours(5), null);
+        
+        List<Booking> mockBookings = new ArrayList<>();
+        mockBookings.add(mockBooking1);
+        mockBookings.add(mockBooking2);
+        
+        when(bookingDAO.getAll()).thenReturn(mockBookings);
+        
+        // Execute
+        List<Booking> result = bookingService.getBookingsBySpace(spaceId);
+        
+        // Verify
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("B001", result.get(0).getBookingId());
+        assertEquals("B002", result.get(1).getBookingId());
+    }
+
+    @Test
+    void testCheckout() {
+        // Setup
+        String bookingId = "B001";
+        Client mockClient = new FacultyMember("FM001", "John Doe", "john@example.com", "password", "CS101", "Computer Science");
+        ParkingSpace mockSpace = new ParkingSpace("A1", 10.0);
+        Booking mockBooking = new Booking(bookingId, mockClient, mockSpace, LocalDateTime.now(), LocalDateTime.now().plusHours(2), null);
+        mockBooking.setTotalCost(100.0); // Set total cost
+
+        when(bookingDAO.getById(bookingId)).thenReturn(mockBooking);
+
+        // Execute
+        bookingService.checkoutBooking(bookingId); // Call the service method
+
+        // Verify
+        assertEquals("Checked Out", mockBooking.getStatus());
+        assertEquals(90.0, mockBooking.getTotalCost()); // Total cost should be reduced by deposit
+        verify(bookingDAO).update(mockBooking); // Verify that update was called
+    }
+
+    @Test
+    void testCreateBookingWithInvalidPaymentMethod() {
+        // Setup
+        String clientId = "FM001";
+        String spaceId = "A1";
+        LocalDateTime startTime = LocalDateTime.now().plusHours(1);
+        LocalDateTime endTime = LocalDateTime.now().plusHours(3);
+        
+        Client mockClient = new FacultyMember(clientId, "John Doe", "john@example.com", "password", "CS101", "Computer Science");
+        ParkingSpace mockSpace = new ParkingSpace(spaceId, 10.0);
+        
+        when(clientDAO.getById(clientId)).thenReturn(mockClient);
+        when(parkingSpaceDAO.getById(spaceId)).thenReturn(mockSpace);
+        
+        // Execute and Verify
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            bookingService.createBooking(clientId, spaceId, startTime, endTime, null); // Null payment method
+        });
+        
+        assertTrue(exception.getMessage().contains("Invalid payment method"));
     }
 }

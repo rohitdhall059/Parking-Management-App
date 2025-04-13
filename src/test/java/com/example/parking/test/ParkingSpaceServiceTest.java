@@ -1,6 +1,7 @@
 package com.example.parking.test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -317,6 +318,104 @@ public class ParkingSpaceServiceTest {
         
         // Execute
         parkingSpaceService.disableSpace("A1");
+        
+        // Verify
+        assertFalse(space.isEnabled());
+        verify(parkingSpaceDAO).update(space);
+    }
+    @Test
+    void testGetAvailableParkingSpacesNoSpaces() {
+        // Setup
+        when(parkingSpaceDAO.getAll()).thenReturn(Arrays.asList());
+        
+        // Execute
+        List<ParkingSpace> result = parkingSpaceService.getAvailableParkingSpaces();
+        
+        // Verify
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetAvailableSpacesNoSpaces() {
+        // Setup
+        when(parkingSpaceDAO.getAll()).thenReturn(Arrays.asList());
+        
+        // Execute
+        List<ParkingSpace> result = parkingSpaceService.getAvailableSpaces();
+        
+        // Verify
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testUpdateParkingSpaceStatusAlreadyOccupied() {
+        // Setup
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        space.setOccupied(true, null);
+        when(parkingSpaceDAO.getById("A1")).thenReturn(space);
+        
+        // Execute
+        parkingSpaceService.updateParkingSpaceStatus("A1", true);
+        
+        // Verify
+        assertTrue(space.isOccupied());
+        verify(parkingSpaceDAO).update(space);
+    }
+
+    @Test
+    void testMarkSpaceOccupiedAlreadyOccupied() {
+        // Setup
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        space.setOccupied(true, null);
+        when(parkingSpaceDAO.getById("A1")).thenReturn(space);
+        
+        // Execute
+        parkingSpaceService.markSpaceOccupied("A1");
+        
+        // Verify
+        assertTrue(space.isOccupied());
+        verify(parkingSpaceDAO).update(space);
+    }
+
+    @Test
+    void testMarkSpaceFreeAlreadyFree() {
+        // Setup
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        space.setOccupied(false, null);
+        when(parkingSpaceDAO.getById("A1")).thenReturn(space);
+        
+        // Execute
+        parkingSpaceService.markSpaceFree("A1");
+        
+        // Verify
+        assertFalse(space.isOccupied());
+        verify(parkingSpaceDAO).update(space);
+    }
+
+    @Test
+    void testUpdateSpaceStatusAlreadyEnabled() {
+        // Setup
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        space.setEnabled(true);
+        when(parkingSpaceDAO.getById("A1")).thenReturn(space);
+        
+        // Execute
+        parkingSpaceService.updateSpaceStatus("A1", true);
+        
+        // Verify
+        assertTrue(space.isEnabled());
+        verify(parkingSpaceDAO).update(space);
+    }
+
+    @Test
+    void testUpdateSpaceStatusAlreadyDisabled() {
+        // Setup
+        ParkingSpace space = new ParkingSpace("A1", 10.0);
+        space.setEnabled(false);
+        when(parkingSpaceDAO.getById("A1")).thenReturn(space);
+        
+        // Execute
+        parkingSpaceService.updateSpaceStatus("A1", false);
         
         // Verify
         assertFalse(space.isEnabled());

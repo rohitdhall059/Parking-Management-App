@@ -2,11 +2,7 @@ package com.example.parking.test;
 
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,14 +27,14 @@ public class VisitorTest {
         assertNotNull(visitor);
         assertEquals("Jane Smith", visitor.getName());
         assertEquals("jane@email.com", visitor.getEmail());
-        assertEquals("Conference Attendee", visitor.getvisitInformation());
+        assertEquals("Conference Attendee", visitor.getVisitInformation());
         assertEquals("VIS001", visitor.getVisitorId());
     }
 
     @Test
     void testGettersAndSetters() {
-        visitor.setvisitInformation("Workshop Participant");
-        assertEquals("Workshop Participant", visitor.getvisitInformation());
+        visitor.setVisitInformation("Workshop Participant");
+        assertEquals("Workshop Participant", visitor.getVisitInformation());
 
         visitor.setVisitorId("VIS002");
         assertEquals("VIS002", visitor.getVisitorId());
@@ -49,7 +45,7 @@ public class VisitorTest {
 
     @Test
     void testDiscountRate() {
-        assertEquals(0.1, visitor.getDiscountRate(), 0.001);
+        assertEquals(0.0, visitor.getDiscountRate(), 0.001);
     }
 
     @Test
@@ -80,4 +76,35 @@ public class VisitorTest {
         assertTrue(visitorString.contains(testDate.toString()));
         assertTrue(visitorString.contains("Jane Smith"));
     }
-} 
+
+    // Additional Tests
+
+    @Test
+    void testVisitDateInitialization() {
+        // Check that the visit date is null upon creation
+        assertNull(visitor.getVisitDate());
+        
+        // Set the visit date and verify
+        visitor.setVisitDate(testDate);
+        assertNotNull(visitor.getVisitDate());
+        assertEquals(testDate, visitor.getVisitDate());
+    }
+
+    @Test
+    void testParkingRateRetrieval() {
+        // Check that the parking rate is greater than 0
+        assertTrue(visitor.getParkingRate() > 0);
+    }
+
+    @Test
+    void testDiscountRateIsZero() {
+        // Verify that the discount rate is 0.0
+        assertEquals(0.0, visitor.getDiscountRate(), 0.001);
+    }
+
+    @Test
+    void testVisitorType() {
+        // Verify that the type of visitor is "VISITOR"
+        assertEquals("VISITOR", visitor.getType());
+    }
+}

@@ -43,38 +43,48 @@ public class BookingService {
         if (client == null) {
             throw new IllegalArgumentException("Client not found: " + clientId);
         }
-
+    
         // Validate parking space
         ParkingSpace space = parkingSpaceDAO.getById(spaceId);
         if (space == null) {
             throw new IllegalArgumentException("Parking space not found: " + spaceId);
         }
-
+    
+        // Validate time range
+        if (endTime.isBefore(startTime)) {
+            throw new IllegalArgumentException("End time must be after start time");
+        }
+    
+        // Validate payment method
+        if (paymentMethod == null) {
+            throw new IllegalArgumentException("Invalid payment method");
+        }
+    
         // Check if space is available
         if (space.isBooked()) {
             throw new IllegalStateException("Parking space is already occupied: " + spaceId);
         }
-
+    
         // Generate unique booking ID
         String bookingId = UUID.randomUUID().toString();
-
+    
         // Calculate booking amount based on duration and space rate
         Duration duration = Duration.between(startTime, endTime);
         double hours = duration.toHours() + (duration.toMinutesPart() > 0 ? 1 : 0);
         double amount = hours * space.getRate();
-
+    
         // Create booking
         Booking booking = new Booking(bookingId, client, space, startTime, endTime, paymentMethod);
         booking.setAmount(amount);
         booking.setStatus("CONFIRMED");
-
+    
         // Save booking
         bookingDAO.save(booking);
-
+    
         // Update parking space status
         space.setOccupied(true, client.getCar());
         parkingSpaceDAO.update(space);
-
+    
         return booking;
     }
 
@@ -86,10 +96,15 @@ public class BookingService {
         if (booking == null) {
             throw new IllegalArgumentException("Booking not found: " + bookingId);
         }
-
+    
+        //Check if the booking is already cancelled
+        if ("CANCELLED".equals(booking.getStatus())) {
+            throw new IllegalStateException("Booking is already cancelled: " + bookingId);
+        }
+    
         booking.setStatus("CANCELLED");
         bookingDAO.update(booking);
-
+    
         // Update parking space status
         ParkingSpace space = booking.getParkingSpace();
         space.setOccupied(false, null);
@@ -104,7 +119,11 @@ public class BookingService {
     }
 
     public Booking getBooking(String bookingId) {
-        return bookingDAO.getById(bookingId);
+        Booking booking = bookingDAO.getById(bookingId);
+        if (booking == null) {
+            throw new IllegalArgumentException("Booking not found: " + bookingId);
+        }
+        return booking;
     }
 
     public void completeBooking(String bookingId) {
@@ -112,11 +131,16 @@ public class BookingService {
         if (booking == null) {
             throw new IllegalArgumentException("Booking not found: " + bookingId);
         }
-
+    
+        // Check if the booking is already completed
+        if ("COMPLETED".equals(booking.getStatus())) {
+            throw new IllegalStateException("Booking is already completed: " + bookingId);
+        }
+    
         // Update booking status
         booking.setStatus("COMPLETED");
         bookingDAO.update(booking);
-
+    
         // Update parking space status
         ParkingSpace space = booking.getParkingSpace();
         space.setOccupied(false, null);
@@ -131,5 +155,13 @@ public class BookingService {
         return bookingDAO.getAll().stream()
                 .filter(b -> b.getParkingSpace().getId().equals(spaceId))
                 .toList();
+    }
+    public void checkoutBooking(String bookingId) {
+        Booking booking = bookingDAO.getById(bookingId);
+        if (booking == null) {
+            throw new IllegalArgumentException("Booking not found");
+        }
+        booking.checkout(); // Call the checkout method
+        bookingDAO.update(booking); // Update the booking in the DAO
     }
 }
