@@ -69,9 +69,10 @@ public class ParkingSpaceService {
      * Returns a list of all currently unoccupied parking spaces.
      */
     public List<ParkingSpace> getAvailableSpaces() {
-        return parkingSpaceDAO.getAll().stream()
-                .filter(space -> !space.isBooked() && space.isDisabled())
-                .toList();
+        List<ParkingSpace> allSpaces = parkingSpaceDAO.getAll();
+        return allSpaces.stream()
+                .filter(space -> !space.isBooked() && !space.isDisabled())
+                .collect(Collectors.toList());
     }
 
     /**

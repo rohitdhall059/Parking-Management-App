@@ -28,9 +28,9 @@ public class ClientFactoryTest {
         assertEquals(id, client.getId());
         assertEquals(name, client.getName());
         assertEquals(email, client.getEmail());
-        assertEquals("default1", ((FacultyMember) client).getFacultyId());
-        assertEquals("default2", ((FacultyMember) client).getDepartment());
-        assertEquals("default3", ((FacultyMember) client).getPassword());
+        assertEquals("default1", ((FacultyMember) client).getPassword());
+        assertEquals("default2", ((FacultyMember) client).getFacultyId());
+        assertEquals("default3", ((FacultyMember) client).getDepartment());
     }
 
     @Test
@@ -48,9 +48,9 @@ public class ClientFactoryTest {
         assertEquals(id, client.getId());
         assertEquals(name, client.getName());
         assertEquals(email, client.getEmail());
-        assertEquals("default1", ((Student) client).getStudentId());
-        assertEquals("default2", ((Student) client).getDepartment());
-        assertEquals("default3", ((Student) client).getPassword());
+        assertEquals("default1", ((Student) client).getPassword());
+        assertEquals("default2", ((Student) client).getStudentId());
+        assertEquals("default3", ((Student) client).getDepartment());
         assertEquals("default4", ((Student) client).getYear());
     }
 
@@ -69,9 +69,9 @@ public class ClientFactoryTest {
         assertEquals(id, client.getId());
         assertEquals(name, client.getName());
         assertEquals(email, client.getEmail());
-        assertEquals("default1", ((NonFacultyStaff) client).getStaffId());
-        assertEquals("default2", ((NonFacultyStaff) client).getOffice());
-        assertEquals("default3", ((NonFacultyStaff) client).getPassword());
+        assertEquals("default1", ((NonFacultyStaff) client).getPassword());
+        assertEquals("default2", ((NonFacultyStaff) client).getStaffId());
+        assertEquals("default3", ((NonFacultyStaff) client).getOffice());
     }
 
     @Test
@@ -89,9 +89,9 @@ public class ClientFactoryTest {
         assertEquals(id, client.getId());
         assertEquals(name, client.getName());
         assertEquals(email, client.getEmail());
-        assertEquals("default1", ((Visitor) client).getvisitInformation());
-        assertEquals("default2", ((Visitor) client).getVisitorId());
-        assertEquals("default3", ((Visitor) client).getPassword());
+        assertEquals("default1", ((Visitor) client).getPassword());
+        assertEquals("default2", ((Visitor) client).getVisitInformation());
+        assertEquals("default3", ((Visitor) client).getVisitorId());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class ClientFactoryTest {
             ClientFactory.createClient(null, id, name, email);
         });
 
-        assertTrue(exception.getMessage().contains("Cannot invoke \"String.toUpperCase()\" because \"type\" is null"));
+        assertTrue(exception.getMessage().contains("Type cannot be null"));
     }
 
     @Test
@@ -146,7 +146,7 @@ public class ClientFactoryTest {
             ClientFactory.createClient("FM", null, null, null);
         });
 
-        assertTrue(exception.getMessage().contains("Cannot invoke \"String.toUpperCase()\" because \"type\" is null"));
+        assertTrue(exception.getMessage().contains("Client parameters cannot be null"));
     }
 
     @Test

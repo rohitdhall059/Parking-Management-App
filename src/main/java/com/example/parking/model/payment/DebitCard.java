@@ -2,21 +2,19 @@ package com.example.parking.model.payment;
 
 public class DebitCard extends PaymentMethod {
 
-    private String cardNumber;
     private String cardHolderName;
     private String pin; // e.g. "1234"
 
     public DebitCard(String cardNumber, String cardHolderName, String pin, double amount) {
-        super(amount);
-        this.cardNumber = cardNumber;
-        this.cardHolderName = cardHolderName;
-        this.pin = pin;
+        super("debit", cardNumber, pin, amount); // Pass type, cardNumber, and credential (PIN) to super
+        this.cardHolderName = cardHolderName; // Initialize cardHolderName
+        this.pin = pin; // Initialize PIN
     }
 
     @Override
     public boolean processPayment(double amount) {
         // 1. Validate the debit card number
-        if (!isValidCardNumber(cardNumber)) {
+        if (!isValidCardNumber(getCardNumber())) { // Use getCardNumber() from superclass
             System.out.println("Transaction failed: invalid debit card number.");
             return false;
         }
@@ -28,7 +26,7 @@ public class DebitCard extends PaymentMethod {
         }
 
         // 3. Mask the card number
-        String masked = maskCardNumber(cardNumber);
+        String masked = maskCardNumber(getCardNumber()); // Use getCardNumber() from superclass
 
         // 4. Check amount
         if (amount <= 0) {
@@ -45,7 +43,7 @@ public class DebitCard extends PaymentMethod {
 
     @Override
     public void processRefund(double amount) {
-        if (!isValidCardNumber(cardNumber)) {
+        if (!isValidCardNumber(getCardNumber())) { // Use getCardNumber() from superclass
             System.out.println("Refund failed: invalid debit card number.");
             return;
         }
@@ -55,7 +53,7 @@ public class DebitCard extends PaymentMethod {
             return;
         }
 
-        String masked = maskCardNumber(cardNumber);
+        String masked = maskCardNumber(getCardNumber()); // Use getCardNumber() from superclass
         System.out.println("Debit card refund of $" + amount + " processed for cardholder " 
             + cardHolderName + " using card " + masked + " with valid PIN.");
     }
@@ -75,7 +73,7 @@ public class DebitCard extends PaymentMethod {
     }
 
     /**
-     * Same masking approach as in CreditCard, so we don't display the full card number.
+     * Mask the card number to hide all but the last four digits.
      */
     private String maskCardNumber(String number) {
         if (number.length() <= 4) {
@@ -83,5 +81,9 @@ public class DebitCard extends PaymentMethod {
         }
         String last4 = number.substring(number.length() - 4);
         return "************" + last4;
+    }
+
+    public Object getCardHolderName() {
+        return cardHolderName;
     }
 }

@@ -57,10 +57,14 @@ public class FacultyMember extends Client implements Observer {
 
     @Override
     public String toString() {
-        return "FacultyMember{" +
-                "department='" + department + '\'' +
+        return "FacultyMember{Name " + name +
+                " department='" + department + '\'' +
                 ", facultyId='" + facultyId + '\'' +
                 ", " + super.toString() +
                 '}';
+    }
+    @Override
+    public String getType() {
+        return "FACULTY"; // Return a string that identifies the type
     }
 }

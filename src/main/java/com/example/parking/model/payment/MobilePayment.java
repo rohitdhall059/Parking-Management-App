@@ -5,10 +5,20 @@ import java.util.regex.Pattern;
 public class MobilePayment extends PaymentMethod {
 
     private String phoneNumber; // Phone number associated with the mobile payment
+    private String credential; // Credential (e.g., name or identifier)
 
+    // Constructor that takes phone number and amount
     public MobilePayment(String phoneNumber, double amount) {
-        super(amount);
-        this.phoneNumber = phoneNumber;
+        super("mobile", null, phoneNumber, amount); // Pass type, cardNumber (null), and phoneNumber as credential
+        this.phoneNumber = phoneNumber; // Initialize phoneNumber
+        this.credential = phoneNumber; // Optionally set credential to phone number
+    }
+
+    // Constructor that takes phone number, credential, and amount
+    public MobilePayment(String phoneNumber, String credential, double amount) {
+        super("mobile", null, phoneNumber, amount); // Pass type, cardNumber (null), and phoneNumber as credential
+        this.phoneNumber = phoneNumber; // Initialize phoneNumber
+        this.credential = credential; // Initialize credential
     }
 
     @Override
@@ -27,7 +37,6 @@ public class MobilePayment extends PaymentMethod {
 
         System.out.println("Mobile payment of $" + amount + " approved using phone number " 
             + maskPhoneNumber(phoneNumber) + ".");
-        // Additional logic: contacting payment gateway, updating logs, etc.
         return true;
     }
 
@@ -42,24 +51,25 @@ public class MobilePayment extends PaymentMethod {
             + maskPhoneNumber(phoneNumber) + ".");
     }
 
-    /**
-     * Checks whether the phone number appears valid (basic check: 10 digits).
-     */
+    @Override
+    public String getCardNumber() {
+        return phoneNumber; // Return the phone number as the "card number"
+    }
+
+    @Override
+    public String getCredential() {
+        return credential; // Return the stored credential
+    }
+
     private boolean isValidPhoneNumber(String number) {
-        // Basic check: must be exactly 10 digits (you can adjust this based on your requirements)
         return Pattern.matches("\\d{10}", number);
     }
 
-    /**
-     * Replace all but the last four digits of the phone number with '*'.
-     */
     private String maskPhoneNumber(String number) {
         if (number.length() <= 4) {
-            // If somehow the phone number is too short, just return it.
             return number;
         }
         String last4 = number.substring(number.length() - 4);
-        // For a 10-digit phone number: "**** **** 1234"
         return "******" + last4;
     }
 }

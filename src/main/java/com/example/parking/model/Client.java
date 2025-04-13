@@ -83,4 +83,10 @@ public abstract class Client {
     public Object getPassword() {
         return password;
     }
+
+    public abstract String getType();
+
+    public void setPassword(String password) {
+        this.password = password;
+    } 
 }

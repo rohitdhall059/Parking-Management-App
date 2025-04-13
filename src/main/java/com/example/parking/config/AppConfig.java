@@ -1,5 +1,7 @@
 package com.example.parking.config;
 
+import java.io.File;
+
 public class AppConfig {
 
     // Singleton instance
@@ -39,6 +41,7 @@ public class AppConfig {
     }
 
     public void setClientsCsvPath(String clientsCsvPath) {
+        validatePath(clientsCsvPath);
         this.clientsCsvPath = clientsCsvPath;
     }
 
@@ -47,6 +50,7 @@ public class AppConfig {
     }
 
     public void setParkingspacesCsvPath(String parkingspacesCsvPath) {
+        validatePath(parkingspacesCsvPath);
         this.parkingspacesCsvPath = parkingspacesCsvPath;
     }
 
@@ -55,6 +59,20 @@ public class AppConfig {
     }
 
     public void setBookingsCsvPath(String bookingsCsvPath) {
+        validatePath(bookingsCsvPath);
         this.bookingsCsvPath = bookingsCsvPath;
+    }
+
+    // Method to validate the path
+    private void validatePath(String path) {
+        if (path == null || path.isEmpty() || !new File(path).isAbsolute()) {
+            throw new IllegalArgumentException("Invalid path: " + path);
+        }
+    }
+
+    public void reset() {
+        this.clientsCsvPath = "data/clients.csv";
+        this.parkingspacesCsvPath = "data/parkingspaces.csv";
+        this.bookingsCsvPath = "data/bookings.csv";
     }
 }

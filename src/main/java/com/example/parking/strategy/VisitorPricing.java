@@ -1,7 +1,7 @@
 package com.example.parking.strategy;
 
 public class VisitorPricing implements PricingStrategy {
-    private static final double RATE = 15.0; 
+    private static final double RATE = 15.0;  // Update to $15 per hour as expected
 
     @Override
     public double getRate() {
@@ -14,7 +14,6 @@ public class VisitorPricing implements PricingStrategy {
     }
 
     public void setRate(double d) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setRate'");
+        throw new UnsupportedOperationException("Value cannot be modified");
     }
-} 
+}

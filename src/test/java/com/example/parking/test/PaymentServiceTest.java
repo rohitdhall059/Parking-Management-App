@@ -1,6 +1,8 @@
 package com.example.parking.test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,7 @@ import com.example.parking.model.Booking;
 import com.example.parking.model.Client;
 import com.example.parking.model.FacultyMember;
 import com.example.parking.model.ParkingSpace;
+import com.example.parking.model.payment.CreditCard;
 import com.example.parking.model.payment.PaymentMethod;
 import com.example.parking.service.PaymentService;
 

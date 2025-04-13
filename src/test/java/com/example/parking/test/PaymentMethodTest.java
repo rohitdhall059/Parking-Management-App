@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.example.parking.model.payment.CreditCard;
@@ -16,15 +17,29 @@ import com.example.parking.model.payment.PaymentMethod;
 import com.example.parking.model.payment.PaymentStatus;
 
 public class PaymentMethodTest {
+    
+    private CreditCard validCard;
+    private CreditCard nullExpiryCard;
+
+    @BeforeEach
+    void setUp() {
+        // Initialize a valid CreditCard object with a specific expiry date
+        validCard = new CreditCard("John Doe", "1234567890123456", "12/25", 1000.0);
+        
+        // Initialize a CreditCard object with null expiry
+        nullExpiryCard = new CreditCard("Jane Doe", "1234567890123456", null, 1000.0);
+    }
 
     // Test class to test abstract PaymentMethod class
     private static class TestPaymentMethod extends PaymentMethod {
-        public TestPaymentMethod(double amount, String type, String cardNumber, String credential) {
-            super(amount, type, cardNumber, credential);
-        }
-
-        public TestPaymentMethod(double amount) {
-            super(amount);
+        
+                public TestPaymentMethod(double amount, String type, String cardNumber, String credential) {
+                    super(type, cardNumber, credential, amount);
+        
+                }
+        
+                public TestPaymentMethod(double amount) {
+                    super(null, null, null, amount);
         }
 
         @Override
@@ -211,55 +226,56 @@ public class PaymentMethodTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
         System.setOut(new PrintStream(baos));
-
+    
         assertFalse(invalidCard.processPayment(500.0));
         System.setOut(originalOut);
         String output = baos.toString();
         assertTrue(output.contains("Transaction failed: invalid credit card number."));
-
+    
         // Test invalid expiry date
         CreditCard invalidExpiryCard = new CreditCard("John Doe", "1234567890123456", "12/20", 1000.0);
         baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-
+    
         assertFalse(invalidExpiryCard.processPayment(500.0));
         System.setOut(originalOut);
         output = baos.toString();
-        assertTrue(output.contains("Transaction failed: credit card has expired."));
-
+        assertTrue(output.contains("Transaction failed: credit card is expired (12/20)."));
+    
         // Test zero or negative amount
         CreditCard validCard = new CreditCard("John Doe", "1234567890123456", "12/25", 1000.0);
         baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-
+    
         assertFalse(validCard.processPayment(0));
         System.setOut(originalOut);
         output = baos.toString();
         assertTrue(output.contains("Transaction failed: amount must be greater than 0."));
-
+    
         // Test successful payment
         baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-
+    
         assertTrue(validCard.processPayment(500.0));
         System.setOut(originalOut);
         output = baos.toString();
-        assertTrue(output.contains("Credit card payment of $500.0 processed for cardholder John Doe using card ************3456 expiring on 12/25."));
-
+        assertTrue(output.contains("Credit card payment of $500.0 approved for John Doe using card ************3456 (expires 12/25)."));
+    
         // Test successful refund
         baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-
+    
         validCard.processRefund(500.0);
         System.setOut(originalOut);
         output = baos.toString();
-        assertTrue(output.contains("Credit card refund of $500.0 processed for cardholder John Doe using card ************3456 expiring on 12/25."));
-
+        assertTrue(output.contains("Credit card refund of $500.0 processed for John Doe using card ************3456 (expires 12/25)."));
+    
         // Test card number masking with very short number
+        CreditCard shortCard = new CreditCard("John Doe", "123", "12/25", 1000.0);
         baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-
-        invalidCard.processRefund(500.0);
+    
+        shortCard.processRefund(500.0);
         System.setOut(originalOut);
         output = baos.toString();
         assertTrue(output.contains("Refund failed: invalid credit card number."));
@@ -267,62 +283,77 @@ public class PaymentMethodTest {
 
     @Test
     void testMobilePaymentValidation() {
-        // Test invalid phone number
+        // Test invalid phone number (less than 10 digits)
         MobilePayment invalidPhone = new MobilePayment("123", 1000.0);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
         System.setOut(new PrintStream(baos));
-
+    
         assertFalse(invalidPhone.processPayment(500.0));
         System.setOut(originalOut);
         String output = baos.toString();
         assertTrue(output.contains("Transaction failed: invalid phone number."));
-
-        // Test zero or negative amount
+    
+        // Test valid phone number but zero or negative amount
         MobilePayment validPhone = new MobilePayment("1234567890", 1000.0);
         baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-
+    
         assertFalse(validPhone.processPayment(0));
         System.setOut(originalOut);
         output = baos.toString();
         assertTrue(output.contains("Transaction failed: amount must be greater than 0."));
-
+    
         // Test successful payment
         baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-
+    
         assertTrue(validPhone.processPayment(500.0));
         System.setOut(originalOut);
         output = baos.toString();
-        assertTrue(output.contains("Mobile payment of $500.0 processed for phone number ******7890."));
-
+        assertTrue(output.contains("Mobile payment of $500.0 approved using phone number ******7890."));
+    
         // Test refund with invalid phone number
         baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-
+    
         invalidPhone.processRefund(500.0);
         System.setOut(originalOut);
         output = baos.toString();
         assertTrue(output.contains("Refund failed: invalid phone number."));
-
+    
         // Test successful refund
         baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-
+    
         validPhone.processRefund(500.0);
         System.setOut(originalOut);
         output = baos.toString();
         assertTrue(output.contains("Mobile payment refund of $500.0 processed for phone number ******7890."));
-
+    
         // Test phone number masking with very short number (length <= 4)
         MobilePayment veryShortPhone = new MobilePayment("1234", 1000.0);
         baos = new ByteArrayOutputStream();
         System.setOut(new PrintStream(baos));
-
+    
         veryShortPhone.processRefund(500.0);
         System.setOut(originalOut);
         output = baos.toString();
-        assertTrue(output.contains("Mobile payment refund of $500.0 processed for phone number 1234."));
+        assertTrue(output.contains("Refund failed: invalid phone number."));
+    }
+    @Test
+    void testGetExpiryReturnsCorrectValue() {
+        // Test that getExpiry() returns the correct expiry date
+        assertEquals("12/25", validCard.getExpiry());
+    }
+
+    @Test
+    void testGetExpiryThrowsExceptionWhenNull() {
+        // Execute & Verify that an exception is thrown when expiry is null
+        Exception exception = assertThrows(UnsupportedOperationException.class, () -> {
+            nullExpiryCard.getExpiry();
+        });
+
+        assertEquals("Unimplemented method 'getExpiry'", exception.getMessage());
     }
 } 

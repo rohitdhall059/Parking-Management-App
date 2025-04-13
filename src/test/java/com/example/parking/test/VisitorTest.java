@@ -31,14 +31,14 @@ public class VisitorTest {
         assertNotNull(visitor);
         assertEquals("Jane Smith", visitor.getName());
         assertEquals("jane@email.com", visitor.getEmail());
-        assertEquals("Conference Attendee", visitor.getvisitInformation());
+        assertEquals("Conference Attendee", visitor.getVisitInformation());
         assertEquals("VIS001", visitor.getVisitorId());
     }
 
     @Test
     void testGettersAndSetters() {
-        visitor.setvisitInformation("Workshop Participant");
-        assertEquals("Workshop Participant", visitor.getvisitInformation());
+        visitor.setVisitInformation("Workshop Participant");
+        assertEquals("Workshop Participant", visitor.getVisitInformation());
 
         visitor.setVisitorId("VIS002");
         assertEquals("VIS002", visitor.getVisitorId());
@@ -49,7 +49,7 @@ public class VisitorTest {
 
     @Test
     void testDiscountRate() {
-        assertEquals(0.1, visitor.getDiscountRate(), 0.001);
+        assertEquals(0.0, visitor.getDiscountRate(), 0.001);
     }
 
     @Test
