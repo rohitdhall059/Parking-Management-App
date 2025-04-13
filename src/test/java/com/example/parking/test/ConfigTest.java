@@ -92,4 +92,69 @@ public class ConfigTest {
         AppConfig config = AppConfig.getInstance();
         assertNotNull(config, "AppConfig instance should not be null after calling getInstance");
     }
+    @Test
+    void testSingletonInstanceCreation() {
+        // Ensure the instance is null before calling getInstance
+        try {
+            Field instanceField = AppConfig.class.getDeclaredField("instance");
+            instanceField.setAccessible(true);
+            instanceField.set(null, null); // Set instance to null
+
+            // Call getInstance and check if a new instance is created
+            AppConfig config = AppConfig.getInstance();
+            assertNotNull(config, "AppConfig instance should not be null after calling getInstance");
+        } catch (Exception e) {
+            fail("Exception occurred while testing singleton instance creation: " + e.getMessage());
+        }
+    }
+    @Test
+    void testSettingValidPaths() {
+        AppConfig config = AppConfig.getInstance();
+        
+        // Set valid absolute paths
+        String validClientsPath = Paths.get("C:/valid/path/clients.csv").toAbsolutePath().toString();
+        config.setClientsCsvPath(validClientsPath);
+        assertEquals(validClientsPath, config.getClientsCsvPath());
+
+        String validParkingspacesPath = Paths.get("C:/valid/path/parkingspaces.csv").toAbsolutePath().toString();
+        config.setParkingspacesCsvPath(validParkingspacesPath);
+        assertEquals(validParkingspacesPath, config.getParkingspacesCsvPath());
+
+        String validBookingsPath = Paths.get("C:/valid/path/bookings.csv").toAbsolutePath().toString();
+        config.setBookingsCsvPath(validBookingsPath);
+        assertEquals(validBookingsPath, config.getBookingsCsvPath());
+    }
+    @Test
+    void testDoubleCheckedLocking() {
+        // Use reflection to set the instance to null
+        try {
+            Field instanceField = AppConfig.class.getDeclaredField("instance");
+            instanceField.setAccessible(true);
+            instanceField.set(null, null); // Set instance to null
+    
+            // Create multiple threads to test concurrent access
+            Runnable task = () -> {
+                AppConfig config = AppConfig.getInstance();
+                assertNotNull(config, "AppConfig instance should not be null");
+            };
+    
+            Thread thread1 = new Thread(task);
+            Thread thread2 = new Thread(task);
+            
+            // Start both threads
+            thread1.start();
+            thread2.start();
+            
+            // Wait for both threads to finish
+            thread1.join();
+            thread2.join();
+    
+            // After both threads have executed, check that the instance is still not null
+            AppConfig finalConfig = AppConfig.getInstance();
+            assertNotNull(finalConfig, "AppConfig instance should not be null after concurrent access");
+        } catch (Exception e) {
+            fail("Exception occurred while testing double-checked locking: " + e.getMessage());
+        }
+    }
+
 }

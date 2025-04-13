@@ -2,11 +2,7 @@ package com.example.parking.test;
 
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -80,4 +76,35 @@ public class VisitorTest {
         assertTrue(visitorString.contains(testDate.toString()));
         assertTrue(visitorString.contains("Jane Smith"));
     }
-} 
+
+    // Additional Tests
+
+    @Test
+    void testVisitDateInitialization() {
+        // Check that the visit date is null upon creation
+        assertNull(visitor.getVisitDate());
+        
+        // Set the visit date and verify
+        visitor.setVisitDate(testDate);
+        assertNotNull(visitor.getVisitDate());
+        assertEquals(testDate, visitor.getVisitDate());
+    }
+
+    @Test
+    void testParkingRateRetrieval() {
+        // Check that the parking rate is greater than 0
+        assertTrue(visitor.getParkingRate() > 0);
+    }
+
+    @Test
+    void testDiscountRateIsZero() {
+        // Verify that the discount rate is 0.0
+        assertEquals(0.0, visitor.getDiscountRate(), 0.001);
+    }
+
+    @Test
+    void testVisitorType() {
+        // Verify that the type of visitor is "VISITOR"
+        assertEquals("VISITOR", visitor.getType());
+    }
+}

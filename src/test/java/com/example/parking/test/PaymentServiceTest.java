@@ -189,4 +189,28 @@ public class PaymentServiceTest {
         assertEquals(1, result.size());
         assertEquals("B001", result.get(0).getBookingId());
     }
+    @Test
+    void testGetUnpaidBookingsEmpty() {
+        // Setup
+        when(bookingDAO.getAll()).thenReturn(Arrays.asList()); // No bookings available
+
+        // Execute
+        List<Booking> result = paymentService.getUnpaidBookings();
+
+        // Verify
+        assertTrue(result.isEmpty(), "Expected empty list of unpaid bookings");
+    }
+
+    @Test
+    void testGetRefundedBookingsEmpty() {
+        // Setup
+        when(bookingDAO.getAll()).thenReturn(Arrays.asList()); // No bookings available
+
+        // Execute
+        List<Booking> result = paymentService.getRefundedBookings();
+
+        // Verify
+        assertTrue(result.isEmpty(), "Expected empty list of refunded bookings");
+    }
+ 
 }

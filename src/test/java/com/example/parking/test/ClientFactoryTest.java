@@ -165,4 +165,48 @@ public class ClientFactoryTest {
         assertEquals(name, client.getName());
         assertEquals(email, client.getEmail());
     }
+    @Test
+    void testCreateClientWithNullId() {
+        // Setup
+        String type = "FM";
+        String name = "Test User";
+        String email = "test@example.com";
+
+        // Execute & Verify
+        Exception exception = assertThrows(NullPointerException.class, () -> {
+            ClientFactory.createClient(type, null, name, email);
+        });
+
+        assertTrue(exception.getMessage().contains("Client parameters cannot be null"));
+    }
+
+    @Test
+    void testCreateClientWithNullName() {
+        // Setup
+        String type = "FM";
+        String id = "FM001";
+        String email = "test@example.com";
+
+        // Execute & Verify
+        Exception exception = assertThrows(NullPointerException.class, () -> {
+            ClientFactory.createClient(type, id, null, email);
+        });
+
+        assertTrue(exception.getMessage().contains("Client parameters cannot be null"));
+    }
+
+    @Test
+    void testCreateClientWithNullEmail() {
+        // Setup
+        String type = "FM";
+        String id = "FM001";
+        String name = "Test User";
+
+        // Execute & Verify
+        Exception exception = assertThrows(NullPointerException.class, () -> {
+            ClientFactory.createClient(type, id, name, null);
+        });
+
+        assertTrue(exception.getMessage().contains("Client parameters cannot be null"));
+    }
 } 

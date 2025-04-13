@@ -297,4 +297,49 @@ public class DAOClassesTest {
         Files.delete(tempBookingsFile);
         assertThrows(RuntimeException.class, () -> realBookingDAO.getAll());
     }
+    @Test
+    void testCSVClientDAOGetByIdNonExistent() {
+        // Test getting a client by ID that does not exist
+        Client retrievedClient = clientDAO.getById("NON_EXISTENT_ID");
+        assertNull(retrievedClient, "Client should be null for non-existent ID");
+    }
+
+    @Test
+    void testCSVClientDAOUpdateNonExistent() {
+        // Test updating a client that does not exist
+        Client client = new FacultyMember("FM999", "Non Existent", "nonexistent@example.com", "password", "F999", "Unknown");
+        clientDAO.update(client); // Should not throw an exception
+        Client retrievedClient = clientDAO.getById("FM999");
+        assertNull(retrievedClient, "Client should still be null after update");
+    }
+
+    @Test
+    void testParkingSpaceDAOImplGetByIdNonExistent() {
+        // Test getting a parking space by ID that does not exist
+        ParkingSpace retrievedSpace = parkingSpaceDAO.getById("NON_EXISTENT_SPACE");
+        assertNull(retrievedSpace, "Parking space should be null for non-existent ID");
+    }
+
+    @Test
+    void testCSVBookingDAOGetByIdNonExistent() {
+        // Test getting a booking by ID that does not exist
+        Booking retrievedBooking = bookingDAO.getById("NON_EXISTENT_BOOKING");
+        assertNull(retrievedBooking, "Booking should be null for non-existent ID");
+    }
+    
+    @Test
+    void testBookingDAOGetByClientIdWithMock() {
+        // Create a mock BookingDAO
+        BookingDAO mockBookingDAO = mock(BookingDAO.class);
+        
+        // Setup the mock to return an empty list when getByClientId is called
+        when(mockBookingDAO.getByClientId("NON_EXISTENT_CLIENT")).thenReturn(List.of());
+        
+        // Test getting bookings for a non-existent client
+        List<Booking> clientBookings = mockBookingDAO.getByClientId("NON_EXISTENT_CLIENT");
+        
+        // Verify that the list is not null and is empty
+        assertNotNull(clientBookings, "Client bookings should not be null");
+        assertTrue(clientBookings.isEmpty(), "Client bookings should be empty for a non-existent client ID");
+    }
 }

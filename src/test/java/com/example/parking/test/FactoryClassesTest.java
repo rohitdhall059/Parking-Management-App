@@ -123,4 +123,59 @@ public class FactoryClassesTest {
             PricingStrategyFactory.getPricingStrategy("invalid");
         });
     }
+
+    @Test
+    void testPaymentMethodFactoryWithEmptyCardNumber() {
+        // Test creating a payment method with an empty card number
+        assertThrows(IllegalArgumentException.class, () -> {
+            PaymentMethodFactory.createPaymentMethod("credit", "", "12/25");
+        });
+    }
+
+    @Test
+    void testPaymentMethodFactoryWithEmptyCredential() {
+        // Test creating a payment method with an empty credential
+        assertThrows(IllegalArgumentException.class, () -> {
+            PaymentMethodFactory.createPaymentMethod("credit", "1234567890123456", "");
+        });
+    }
+
+    @Test
+    void testPricingStrategyFactoryWithEmptyType() {
+        // Test creating a pricing strategy with an empty type
+        assertThrows(IllegalArgumentException.class, () -> {
+            PricingStrategyFactory.getPricingStrategy("");
+        });
+    }
+
+    @Test
+    void testPricingStrategyFactoryWithUnknownType() {
+        // Test creating a pricing strategy with an unknown type
+        assertThrows(IllegalArgumentException.class, () -> {
+            PricingStrategyFactory.getPricingStrategy("unknown_type");
+        });
+    }
+    @Test
+    void testClientFactoryWithWhitespaceType() {
+        // Test creating a client with a whitespace type
+        assertThrows(IllegalArgumentException.class, () -> {
+            ClientFactory.createClient("   ", "FM001", "John Smith", "john@example.com");
+        });
+    }
+
+    @Test
+    void testPaymentMethodFactoryWithWhitespaceCardNumber() {
+        // Test creating a payment method with a whitespace card number
+        assertThrows(IllegalArgumentException.class, () -> {
+            PaymentMethodFactory.createPaymentMethod("credit", "   ", "12/25");
+        });
+    }
+
+    @Test
+    void testPricingStrategyFactoryWithWhitespaceType() {
+        // Test creating a pricing strategy with a whitespace type
+        assertThrows(IllegalArgumentException.class, () -> {
+            PricingStrategyFactory.getPricingStrategy("   ");
+        });
+    }
 }
