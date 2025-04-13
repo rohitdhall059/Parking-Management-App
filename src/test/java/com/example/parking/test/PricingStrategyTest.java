@@ -1,12 +1,14 @@
-package com.example.parking.tests;
+package com.example.parking.test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
-import com.example.parking.strategy.StudentPricing;
+import org.junit.jupiter.api.Test;
+
 import com.example.parking.strategy.FacultyPricing;
 import com.example.parking.strategy.NonFacultyStaffPricing;
+import com.example.parking.strategy.StudentPricing;
 import com.example.parking.strategy.VisitorPricing;
-import org.junit.jupiter.api.Test;
 
 class PricingStrategyTest {
     private StudentPricing studentPricing;

@@ -254,4 +254,48 @@ public class BookingServiceTest {
         assertEquals("B001", result.get(0).getBookingId());
         assertEquals("B002", result.get(1).getBookingId());
     }
+
+    @Test
+    void testBookingSetters() {
+        // Setup initial booking
+        Client initialClient = new FacultyMember("FM001", "John Doe", "john@example.com", "password", "CS101", "Computer Science");
+        ParkingSpace initialSpace = new ParkingSpace("A1", 10.0);
+        LocalDateTime initialStartTime = LocalDateTime.now();
+        LocalDateTime initialEndTime = initialStartTime.plusHours(2);
+        PaymentMethod paymentMethod = new CreditCard("John Doe", "1234567890123456", "12/25", 1000.0);
+        
+        Booking booking = new Booking("B001", initialClient, initialSpace, initialStartTime, initialEndTime, paymentMethod);
+        
+        // Test setBookingId
+        booking.setBookingId("B002");
+        assertEquals("B002", booking.getBookingId());
+        
+        // Test setClient
+        Client newClient = new FacultyMember("FM002", "Jane Doe", "jane@example.com", "password", "CS102", "Mathematics");
+        booking.setClient(newClient);
+        assertEquals(newClient, booking.getClient());
+        assertEquals("FM002", booking.getClientId());
+        
+        // Test setSpaceId
+        ParkingSpace newSpace = new ParkingSpace("A2", 12.0);
+        booking.setSpaceId(newSpace);
+        assertEquals(newSpace, booking.getSpaceId());
+        assertEquals("A2", booking.getSpaceId().getId());
+        
+        // Test setStartTime
+        LocalDateTime newStartTime = LocalDateTime.now().plusDays(1);
+        booking.setStartTime(newStartTime);
+        assertEquals(newStartTime, booking.getStartTime());
+        
+        // Test setEndTime
+        LocalDateTime newEndTime = newStartTime.plusHours(3);
+        booking.setEndTime(newEndTime);
+        assertEquals(newEndTime, booking.getEndTime());
+        
+        // Verify toString still works with updated values
+        String bookingString = booking.toString();
+        assertTrue(bookingString.contains("B002"));
+        assertTrue(bookingString.contains("FM002"));
+        assertTrue(bookingString.contains("A2"));
+    }
 }
