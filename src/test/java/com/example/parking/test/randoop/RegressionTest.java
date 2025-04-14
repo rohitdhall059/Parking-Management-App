@@ -1,4 +1,4 @@
-package com.example.parking.tests.randoop;
+package com.example.parking.test.randoop;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

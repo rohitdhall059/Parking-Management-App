@@ -4,18 +4,23 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.example.parking.dao.BookingDAO;
 import com.example.parking.dao.ClientDAO;
 import com.example.parking.dao.ParkingSpaceDAO;
 import com.example.parking.model.Booking;
+import com.example.parking.model.Car;
 import com.example.parking.model.Client;
 import com.example.parking.model.ParkingSpace;
-import com.example.parking.model.Car;
 import com.example.parking.model.payment.CreditCard;
 import com.example.parking.model.payment.PaymentMethod;
 import com.example.parking.service.BookingService;
